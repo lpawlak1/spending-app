@@ -3,12 +3,27 @@ package controllers
 import javax.inject._
 import play.api.mvc._
 
+import scala.concurrent.{Await, ExecutionContext}
+import scala.util.{Failure, Success, Try}
+import scala.concurrent.duration.DurationInt
+import scala.language.postfixOps
+import models.User
+
+import java.time.LocalDateTime
+
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(
+  userDao: daos.UserDao,
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+
+  def get = {
+    userDao.findAll()
+  }
 
   /**
    * Create an Action to render an HTML page with a welcome message.
@@ -17,7 +32,19 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * a path of `/`.
    */
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    userDao.insert(User(2,"2", "3", "4", "5", LocalDateTime.now())) // just to test connection to db :)
+    val myVal = get
+    Try(Await.result(myVal, 10 seconds)) match {
+      case Success(extractedVal) => {
+        Ok(views.html.index("Your new application is ready.", extractedVal))
+      }
+      case Failure(_) =>{
+        Ok(views.html.index("Your new application is ready.", List()))
+      }
+      case _ => {
+        Ok(views.html.index("Your new application is fucked.", List()))
+      }
+    }
   }
 
 }

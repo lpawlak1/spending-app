@@ -2,6 +2,7 @@ import com.google.inject.AbstractModule
 import java.time.Clock
 
 import services.{ApplicationTimer, AtomicCounter, Counter}
+import daos._
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -23,6 +24,8 @@ class Module extends AbstractModule {
     bind(classOf[ApplicationTimer]).asEagerSingleton()
     // Set AtomicCounter as the implementation for Counter.
     bind(classOf[Counter]).to(classOf[AtomicCounter])
+    //Set userDAO for public.user db connection
+    bind(classOf[UserDao]).to(classOf[UserDaoSlick])
   }
 
 }
