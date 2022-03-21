@@ -13,4 +13,8 @@ services:
     ports:
       - 8083:5432
     volumes:
+      - ./tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
