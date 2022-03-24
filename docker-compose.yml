@@ -15,6 +15,14 @@ services:
     volumes:
       - ./tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./postgres:/var/lib/postgresql/data
+  sbt:
+    container_name: sbt_program
+    build:
+      context: ./spending_app_scala
+    ports:
+      - 9000:9000
+    volumes:
+      - ./spending_app_scala/:/app
 
 volumes:
   postgres:
