@@ -6,23 +6,25 @@ import javax.inject.Singleton
 import scala.concurrent.Future
 import play.api.db.slick._
 import slick.dbio.DBIOAction
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{GetResult, JdbcProfile}
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 trait UserDao {
     def findAll(): Future[Seq[models.User]]
     def insert(user: models.User): Future[Unit]
+    def findOne(id: Int): Future[Option[models.UserPlain]]
 }
 
-@Singleton
-class UserDaoMap extends UserDao {
-    val map = collection.mutable.Map.empty[Int, models.User]
-
-    def findAll(): Future[Seq[models.User]] = Future.successful(map.values.toSeq)
-    def insert(user: models.User): Future[Unit] = Future.successful(map.update(user.U_ID, user))
-}
+//@Singleton
+//class UserDaoMap extends UserDao {
+//    val map = collection.mutable.Map.empty[Int, models.User]
+//
+//    def findAll(): Future[Seq[models.User]] = Future.successful(map.values.toSeq)
+//    def insert(user: models.User): Future[Unit] = Future.successful(map.update(user.U_ID, user))
+//}
 
 
 class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -49,5 +51,13 @@ class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
     def insert(user: models.User): Future[Unit] = db.run {
         (table += user)
             .andThen(DBIOAction.successful(())) // Return Unit instead of Int
+    }
+
+    implicit val getUserPlainResult: GetResult[models.UserPlain] = GetResult(r => models.UserPlain(r.<<, r.<<, r.<<, r.<<, LocalDateTime.parse(r.<<,DateTimeFormatter.ofPattern("yyyy MM dd HH mm ss"))  ))
+    def findOne(id: Int): Future[Option[models.UserPlain]] = db.run {
+        sql"""
+            select u_id, u_name, u_email, u_role, to_char(registrationdate,'YYYY MM DD HH MI SS') as registrationdate
+            from public.user
+            where u_id = ${id}""".as[models.UserPlain].headOption
     }
 }

@@ -3,7 +3,10 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
+#GET     /                           controllers.HomeController.index
+
+# protected index controller
+GET     /                           controllers.HomeController.index(user_id: Option[String])
 
 # Login screen to submit login information and authenticate
 GET     /login                      controllers.LoginController.get_login_page
@@ -14,3 +17,6 @@ GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+
+GET     /forbidden                  controllers.Default.notFound

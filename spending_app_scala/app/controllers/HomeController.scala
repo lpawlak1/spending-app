@@ -1,14 +1,13 @@
 package controllers
 
+import models.UserPlain
+
 import javax.inject._
 import play.api.mvc._
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
-import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
-import models.User
-
 import java.time.LocalDateTime
 
 /**
@@ -31,8 +30,20 @@ class HomeController @Inject()(
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action {
-    Ok(views.html.index(LocalDateTime.now(), (1000.0,996.0), "Łukasz"))
+  def index(user_id: Option[String]) = Action.async{
+    implicit request => {
+      if (user_id.isEmpty){
+        Future(Ok(views.html.login()))
+      }
+      else{
+        val id = if (user_id.isEmpty) -1 else user_id.get.toInt
+        val usr_plain = userDao.findOne(id)
+        usr_plain.map{
+          case usr: Option[UserPlain] => Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get.U_Name))
+          case _  => Ok(views.html.login())
+        }
+      }
+    }
   }
 
 }
