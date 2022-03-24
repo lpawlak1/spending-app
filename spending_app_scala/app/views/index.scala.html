@@ -2,23 +2,62 @@
  * This template takes a single argument, a String containing a
  * message to display.
  *@
-@(message: String, essa: Seq[models.User])
+@import java.time.LocalDateTime
+@import java.time.format.DateTimeFormatter
+@(data: LocalDateTime, limits: Tuple2[Double,Double], userName: String)
 
-@*
- * Call the `main` template with two arguments. The first
- * argument is a `String` with the title of the page, the second
- * argument is an `Html` object containing the body of the page.
- *@
-@main("Welcome to Play") {
+<!DOCTYPE html>
+<html lang="en">
+    @head(List(routes.Assets.versioned("stylesheets/style.css")), List(), "Main page")
+    <body>
 
-    @*
-     * Get an `Html` object by calling the built-in Play welcome
-     * template and passing a `String` message.
-     *@
-    @welcome(message, style = "scala")
+        <div class="nav-wrapper">
+            <div class="left-date shadow">
+                <p>@{
+                    // Custom format if needed
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    <p>
-        @{essa.toList.isEmpty}
-        @{essa.toList}
-    </p>
-}
+                    // Format LocalDateTime
+                    data.format(formatter);
+                }</p>
+            </div>
+
+            <div class="center-hello element-blue">
+                <h1>
+                    Hello, @userName !
+                </h1>
+            </div>
+
+            <div class="right-li">
+                <ul>
+                    <li class="element-blue"><a>Log out</a></li>
+                    <li class="element-blue"><a>Change color</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid-3w">
+            <div class="element-blue text-center summary-div">
+                <p>Month Limit:</p>
+                <p><b>@limits._1 zł</b></p>
+                <p>Expenses:</p>
+                <p><b>@limits._2 zł</b></p>
+            </div>
+            <div>
+                <div class="img-wrapper">
+                    <img alt="no photo :(" class="logo_200" src="http://placekitten.com/200/200">
+                </div>
+                <div class="li_main_wrapper">
+                    <li class="li_main">
+                        <ul class="ul_main"><a>Add new expense</a></ul>
+                        <ul class="ul_main"><a>Show expenses on chart</a></ul>
+                        <ul class="ul_main"><a>Compare expenses</a></ul>
+                        <ul class="ul_main"><a>Check expense history</a></ul>
+                        <ul class="ul_main"><a>Suprise :)</a></ul>
+                    </li>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

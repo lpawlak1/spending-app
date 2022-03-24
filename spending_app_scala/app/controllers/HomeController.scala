@@ -32,19 +32,7 @@ class HomeController @Inject()(
    * a path of `/`.
    */
   def index = Action {
-    userDao.insert(User(2,"2", "3", "4", "5", LocalDateTime.now())) // just to test connection to db :)
-    val myVal = get
-    Try(Await.result(myVal, 10 seconds)) match {
-      case Success(extractedVal) => {
-        Ok(views.html.index("Your new application is ready.", extractedVal))
-      }
-      case Failure(_) =>{
-        Ok(views.html.index("Your new application is ready.", List()))
-      }
-      case _ => {
-        Ok(views.html.index("Your new application is fucked.", List()))
-      }
-    }
+    Ok(views.html.index(LocalDateTime.now(), (1000.0,996.0), "Łukasz"))
   }
 
 }

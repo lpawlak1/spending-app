@@ -1,0 +1,23 @@
+@** Gets whole head for every page in site
+** styles is iterable of Calls ie. @routes.Assets.versioned("stylesheets/style.css") for css files
+** js is the same as styles for javascript files
+**@
+@import slick.ast.Union
+@(styles: Iterable[Call], js: Iterable[Call], title: String)
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@@300&display=swap" rel="stylesheet">
+
+    @* the link below should be default for all pages*@
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/style.css") ">
+
+    @for(x <- styles) {
+        <link rel="stylesheet" href="@x">
+    }
+    <title>@title</title>
+</head>
