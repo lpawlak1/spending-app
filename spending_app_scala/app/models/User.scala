@@ -13,4 +13,5 @@ case class User(
     def tupled(tuple: (Int, String, String, String, String, LocalDateTime)): User = {
         (User.apply _).tupled(tuple)
     }
+
 }
