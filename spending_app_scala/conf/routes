@@ -10,6 +10,7 @@ GET     /                           controllers.HomeController.index(user_id: Op
 
 # Login screen to submit login information and authenticate
 GET     /login                      controllers.LoginController.get_login_page
+POST    /login                      controllers.LoginController.post_login_page
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code

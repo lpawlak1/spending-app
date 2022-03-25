@@ -1,4 +1,5 @@
-@()
+@import helper._
+@(userForm: Form[UserData])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +28,14 @@
                 </div>   
             </form>     
         </div>
-
+        <div>
+            @helper.form(action = routes.LoginController.post_login_page) {
+                @helper.CSRF.formField
+                @helper.inputText(userForm("email"))
+                @helper.inputText(userForm("password"))
+                <input type="submit" value="Submit">
+            }
+        </div>
     </div>
     
     

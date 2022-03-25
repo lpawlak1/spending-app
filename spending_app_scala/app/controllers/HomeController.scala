@@ -33,14 +33,14 @@ class HomeController @Inject()(
   def index(user_id: Option[String]) = Action.async{
     implicit request => {
       if (user_id.isEmpty){
-        Future(Ok(views.html.login()))
+        Future(Redirect("/login"))
       }
       else{
         val id = if (user_id.isEmpty) -1 else user_id.get.toInt
         val usr_plain = userDao.findOne(id)
         usr_plain.map{
           case usr: Option[UserPlain] => Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get.U_Name))
-          case _  => Ok(views.html.login())
+//          case _  => Ok(views.html.login())
         }
       }
     }
