@@ -23,6 +23,3 @@ services:
       - 9000:9000
     volumes:
       - ./spending_app_scala/:/app
-
-volumes:
-  postgres:
