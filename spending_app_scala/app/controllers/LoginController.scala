@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject._
 import akka.actor.ActorSystem
+import controllers.LoginUtils.LOGIN_ERROR_LINK
 import daos.UserDao
 import play.api.mvc._
 import play.api.data.Forms._
@@ -9,6 +10,10 @@ import play.api.data.Form
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future, Promise}
+
+object LoginUtils {
+  val LOGIN_ERROR_LINK = "/login?err_code=1"
+}
 
 case class UserData(email: String, password: String)
 
@@ -32,7 +37,7 @@ class LoginController @Inject()(
    * After login submit button was clicked this is going to happen
    */
   def post_login_page(): Action[AnyContent] = Action.async { implicit request =>
-    val formData: Form[UserData] = BasicForm.form.bindFromRequest
+    val formData: Form[UserData] = BasicForm.form.bindFromRequest()
     if (formData.hasErrors) {
       Future{BadRequest(views.html.login(formData))}
     }
@@ -44,19 +49,17 @@ class LoginController @Inject()(
       user.map {
         case usr: Option[models.User] =>
           usr match {
-            case Some(uu) => {
-              if (uu.U_Password == password) {
-                Redirect(routes.HomeController.index(Some(usr.get.U_Name)))
-              } else {
-                Redirect("/login?err_code=1")
+            case Some(uu) =>
+              uu.password match {
+                case Some(pwd) =>
+                  if (pwd == password) Some(Redirect(routes.HomeController.index(Some(usr.get.name))))
+                  else None
+                case None => None
               }
-            }
-            case None => {
-              Redirect("/login?err_code=1")
-            }
+            case None => None
           }
-        case _  => Redirect("/login?err_code=1")
-      }
+        case _  => None
+      }.map(r => r.getOrElse(Redirect(LOGIN_ERROR_LINK)))
     }
   }
 

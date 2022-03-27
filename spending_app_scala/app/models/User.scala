@@ -1,29 +1,23 @@
 package models
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-case class User(
-    U_ID: Int,
-    U_Name: String,
-    U_Email: String,
-    U_Role: String,
-    U_Password: String,
-    RegistrationDate: LocalDateTime
-) {
-    def tupled(tuple: (Int, String, String, String, String, LocalDateTime)): User = {
-        (User.apply _).tupled(tuple)
+case class UserMinimal(id: Int,
+                       name: String,
+                       email: String,
+                       role: String) {
+    def tupled(tuple: (Int, String, String, String)): UserMinimal = {
+        (UserMinimal.apply _).tupled(tuple)
     }
 }
 
-case class UserPlain(
-      U_ID: Int,
-      U_Name: String,
-      U_Email: String,
-      U_Role: String,
-      RegistrationDate: LocalDateTime
-) {
-    def tupled(tuple: (Int, String, String, String, LocalDateTime)): UserPlain = {
-        (UserPlain.apply _).tupled(tuple)
+case class User(id: Int,
+                name: String,
+                email: String,
+                role: String,
+                password: Option[String],
+                registrationDate: LocalDateTime) {
+    def tupled(tuple: ( Int, String, String, String, Option[String], LocalDateTime )): User = {
+        (User.apply _).tupled(tuple)
     }
 }

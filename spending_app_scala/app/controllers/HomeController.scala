@@ -1,6 +1,6 @@
 package controllers
 
-import models.UserPlain
+import models.{UserMinimal }
 
 import javax.inject._
 import play.api.mvc._
@@ -30,20 +30,19 @@ class HomeController @Inject()(
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index(user_id: Option[String]) = Action.async{
+  def index(user_id: Option[String]): Action[AnyContent] = Action.async{
     implicit request => {
-      if (user_id.isEmpty){
-        Future(Redirect("/login"))
-      }
-      else{
-        val id = if (user_id.isEmpty) -1 else user_id.get.toInt
-        val usr_plain = userDao.findOne(id)
-        usr_plain.map{
-          case usr: Option[UserPlain] => Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get.U_Name)) // dodac obsluge braku osoby (TODO)
-          case _  => Redirect("/login")
-        }
+      /*Tutaj sprawdzam czy użytkownik podany w query parameter istnieje itp*/
+      (if (user_id.isEmpty) None else user_id.get.toIntOption.orElse(None)) match {
+        case Some(id) =>
+          userDao.findOnesUsername(id).map{
+            case usr: Option[String] =>
+              if (usr.isEmpty) Redirect("/login")
+              else Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get))
+            case _  => Redirect(LoginUtils.LOGIN_ERROR_LINK)
+          }
+        case None => Future(Redirect(LoginUtils.LOGIN_ERROR_LINK))
       }
     }
   }
-
 }
