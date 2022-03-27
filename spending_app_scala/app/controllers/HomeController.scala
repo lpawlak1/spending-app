@@ -39,8 +39,8 @@ class HomeController @Inject()(
         val id = if (user_id.isEmpty) -1 else user_id.get.toInt
         val usr_plain = userDao.findOne(id)
         usr_plain.map{
-          case usr: Option[UserPlain] => Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get.U_Name))
-//          case _  => Ok(views.html.login())
+          case usr: Option[UserPlain] => Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get.U_Name)) // dodac obsluge braku osoby (TODO)
+          case _  => Redirect("/login")
         }
       }
     }

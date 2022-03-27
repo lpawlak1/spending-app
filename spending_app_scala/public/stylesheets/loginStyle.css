@@ -55,8 +55,9 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: auto;
-    margin-left: 130px;
     width: 200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .element-blue {
@@ -66,8 +67,7 @@ body {
 }
 
 .container {   
-    padding: 100px;
-    margin-top: 10px;    
+    margin-top: 10px;
 }   
 
 input[type=text], input[type=password] {   
@@ -77,16 +77,44 @@ input[type=text], input[type=password] {
     display: inline-block;      
     box-sizing: border-box;   
     
-}  
+}
+dl {
+    margin: 0;
+}
+dd {
+    margin-inline-start: 0;
+}
 ::placeholder {
     color: rgb(88, 87, 87);
     font-size: 22px;
     font-weight: bold;
   }
 
-.center {
+.center-img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 40%;
+    width: 140px;
+    height: 140px;
   }
+
+dt {
+    display: none;
+}
+
+dd.info {
+    display: none;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #FFCD91;
+}

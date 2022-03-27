@@ -1,4 +1,3 @@
-@import helper._
 @(userForm: Form[UserData])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 
 <!DOCTYPE html>
@@ -10,31 +9,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/Toast.min.css")">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/loginStyle.css")">
-    <title>Document</title>
+    <script src="@routes.Assets.versioned("javascripts/jquery-3.6.0.min.js")" defer></script>
+    <script src="@routes.Assets.versioned("javascripts/Toast.min.js")" defer></script>
+    <script src="@routes.Assets.versioned("javascripts/loginJS.js")" defer></script>
+    <title>Login page</title>
 </head>
 <body>
 
     <div class="nav-wrapper">
         <div class="login-background element-gradient">
-            <form >  
-                <div class="container" >   
-                    <img src="@routes.Assets.versioned("images/dollar.png")" class="center"/>
-                  
-                    <input type="text"  placeholder="Username" name="username" required>  
-                   
-                    <input type="password" placeholder="Password" name="password" required>  
-                    <button class="login-button">Login<i class="fa-solid fa-arrow-right-to-bracket"></i></button>    
-                </div>   
-            </form>     
+            @helper.form(action = routes.LoginController.post_login_page) {
+                <img src="@routes.Assets.versioned("images/dollar.png")" class="center-img"/>
+                @helper.CSRF.formField
+                @helper.inputText(userForm("email"), Symbol("class") -> "login-input", Symbol("placeholder") -> "Email", Symbol("id") -> "email", Symbol("name") -> "email")
+                @helper.inputText(userForm("password"), Symbol("class") -> "login-input", Symbol("placeholder") -> "Password", Symbol("id") -> "password", Symbol("name") -> "password")
+                <button class="login-button">Login<i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+            }
         </div>
         <div>
-            @helper.form(action = routes.LoginController.post_login_page) {
-                @helper.CSRF.formField
-                @helper.inputText(userForm("email"))
-                @helper.inputText(userForm("password"))
-                <input type="submit" value="Submit">
-            }
         </div>
     </div>
     

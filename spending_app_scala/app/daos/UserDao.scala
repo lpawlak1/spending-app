@@ -16,6 +16,7 @@ trait UserDao {
     def findAll(): Future[Seq[models.User]]
     def insert(user: models.User): Future[Unit]
     def findOne(id: Int): Future[Option[models.UserPlain]]
+    def findOneByEmail(email: String): Future[Option[models.User]]
 }
 
 //@Singleton
@@ -59,5 +60,13 @@ class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
             select u_id, u_name, u_email, u_role, to_char(registrationdate,'YYYY MM DD HH MI SS') as registrationdate
             from public.user
             where u_id = ${id}""".as[models.UserPlain].headOption
+    }
+
+    implicit val getUserPlainResult2: GetResult[models.User] = GetResult(r => models.User(r.<<, r.<<, r.<<, r.<<, r.<<, LocalDateTime.parse(r.<<,DateTimeFormatter.ofPattern("yyyy MM dd HH mm ss"))))
+    def findOneByEmail(email: String): Future[Option[models.User]] = db.run {
+        sql"""
+            select u_id, u_name, u_email, u_role, u_password, to_char(registrationdate,'YYYY MM DD HH MI SS') as registrationdate
+            from public.user
+            where u_email = ${email}""".as[models.User].headOption
     }
 }
