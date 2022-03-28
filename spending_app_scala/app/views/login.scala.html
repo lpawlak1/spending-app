@@ -2,20 +2,9 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@@300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/Toast.min.css")">
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/loginStyle.css")">
-    <script src="@routes.Assets.versioned("javascripts/jquery-3.6.0.min.js")" defer></script>
-    <script src="@routes.Assets.versioned("javascripts/Toast.min.js")" defer></script>
-    <script src="@routes.Assets.versioned("javascripts/loginJS.js")" defer></script>
-    <title>Login page</title>
-</head>
+    @head(List(routes.Assets.versioned("stylesheets/Toast.min.css"), routes.Assets.versioned("stylesheets/loginStyle.css")),
+          List(routes.Assets.versioned("javascripts/jquery-3.6.0.min.js"), routes.Assets.versioned("javascripts/Toast.min.js"), routes.Assets.versioned("javascripts/loginJS.js")),
+          "Login page"){ }
 <body>
 
     <div class="nav-wrapper">
@@ -24,7 +13,7 @@
                 <img src="@routes.Assets.versioned("images/dollar.png")" class="center-img"/>
                 @helper.CSRF.formField
                 @helper.inputText(userForm("email"), Symbol("class") -> "login-input", Symbol("placeholder") -> "Email", Symbol("id") -> "email", Symbol("name") -> "email")
-                @helper.inputText(userForm("password"), Symbol("class") -> "login-input", Symbol("placeholder") -> "Password", Symbol("id") -> "password", Symbol("name") -> "password")
+                @helper.inputText(userForm("password"), Symbol("class") -> "login-input", Symbol("placeholder") -> "Password", Symbol("id") -> "password", Symbol("name") -> "password", Symbol("type") -> "password")
                 <button class="login-button">Login<i class="fa-solid fa-arrow-right-to-bracket"></i></button>
             }
         </div>

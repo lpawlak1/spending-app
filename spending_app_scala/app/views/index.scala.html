@@ -8,7 +8,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    @head(List(routes.Assets.versioned("stylesheets/style.css")), List(), "Main page")
+    @head(List(routes.Assets.versioned("stylesheets/style.css")), List(routes.Assets.versioned("javascripts/jquery-3.6.0.min.js"), routes.Assets.versioned("javascripts/Toast.min.js"),routes.Assets.versioned("javascripts/index.js")), "Main page"){ }
     <body>
 
         <div class="nav-wrapper">
@@ -30,8 +30,8 @@
 
             <div class="right-li">
                 <ul>
-                    <li class="element-blue"><a>Log out</a></li>
-                    <li class="element-blue"><a>Change color</a></li>
+                    <li class="element-blue"><button id="log-out" class="right-elem">Log out</button></li>
+                    <li class="element-blue"><button id="user-config">Settings</button></li>
                 </ul>
             </div>
         </div>

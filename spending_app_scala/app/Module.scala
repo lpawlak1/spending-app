@@ -26,6 +26,8 @@ class Module extends AbstractModule {
     bind(classOf[Counter]).to(classOf[AtomicCounter])
     //Set userDAO for public.user db connection
     bind(classOf[UserDao]).to(classOf[UserDaoSlick])
+    //Set UserLogin for public.UserLogin db connection
+    bind(classOf[UserLoginDao]).to(classOf[UserLoginSlick])
   }
 
 }

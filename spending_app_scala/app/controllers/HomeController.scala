@@ -20,16 +20,6 @@ class HomeController @Inject()(
   cc: ControllerComponents
 )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  def get = {
-    userDao.findAll()
-  }
-
-  /**
-   * Create an Action to render an HTML page with a welcome message.
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
-   */
   def index(user_id: Option[String]): Action[AnyContent] = Action.async{
     implicit request => {
       /*Tutaj sprawdzam czy użytkownik podany w query parameter istnieje itp*/
@@ -37,7 +27,7 @@ class HomeController @Inject()(
         case Some(id) =>
           userDao.findOnesUsername(id).map{
             case usr: Option[String] =>
-              if (usr.isEmpty) Redirect("/login")
+              if (usr.isEmpty) Redirect(LoginUtils.LOGIN_ERROR_LINK)
               else Ok(views.html.index(LocalDateTime.now(), (1000.0,id), usr.get))
             case _  => Redirect(LoginUtils.LOGIN_ERROR_LINK)
           }

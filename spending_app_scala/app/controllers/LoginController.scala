@@ -3,7 +3,8 @@ package controllers
 import javax.inject._
 import akka.actor.ActorSystem
 import controllers.LoginUtils.LOGIN_ERROR_LINK
-import daos.UserDao
+import daos.{UserDao, UserLoginDao}
+import models.LoginUser
 import play.api.mvc._
 import play.api.data.Forms._
 import play.api.data.Form
@@ -21,7 +22,7 @@ case class UserData(email: String, password: String)
 class LoginController @Inject()(
   cc: ControllerComponents,
   actorSystem: ActorSystem,
-  userDao: UserDao
+  userLoginDao: UserLoginDao
 )(implicit exec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   object BasicForm {
@@ -45,21 +46,30 @@ class LoginController @Inject()(
       val userData = formData.get
       val email = userData.email
       val password = userData.password
-      val user = userDao.findOneByEmail(email)
+      val user = userLoginDao.findOneByEmail(email)
+//      user.map {
+//        case usr: Option[models.User] =>
+//          usr match {
+//            case Some(uu) =>
+//              uu.password match {
+//                case Some(pwd) =>
+//                  if (pwd == password) Some(Redirect(routes.HomeController.index(Some(usr.get.name))))
+//                  else None
+//                case None => None
+//              }
+//            case None => None
+//          }
+//        case _  => None
+//      }.map(r => r.getOrElse(Redirect(LOGIN_ERROR_LINK)))
+
       user.map {
-        case usr: Option[models.User] =>
-          usr match {
-            case Some(uu) =>
-              uu.password match {
-                case Some(pwd) =>
-                  if (pwd == password) Some(Redirect(routes.HomeController.index(Some(usr.get.name))))
-                  else None
-                case None => None
-              }
-            case None => None
-          }
-        case _  => None
-      }.map(r => r.getOrElse(Redirect(LOGIN_ERROR_LINK)))
+        _.filter (u => u.password == password).collectFirst(u => u) match {
+          case Some(u) =>
+            Redirect(s"/?user_id=${u.id}")
+          case None =>
+            Redirect(LOGIN_ERROR_LINK)
+        }
+      }
     }
   }
 

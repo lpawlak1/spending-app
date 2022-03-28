@@ -2,7 +2,6 @@ package daos
 
 import models._
 
-import javax.inject.Singleton
 import scala.concurrent.Future
 import play.api.db.slick._
 import slick.dbio.DBIOAction
@@ -20,15 +19,6 @@ trait UserDao {
     def findOne(id: Int): Future[Option[models.UserMinimal]]
     def findOneByEmail(email: String): Future[Option[models.User]]
 }
-
-//@Singleton
-//class UserDaoMap extends UserDao {
-//    val map = collection.mutable.Map.empty[Int, models.User]
-//
-//    def findAll(): Future[Seq[models.User]] = Future.successful(map.values.toSeq)
-//    def insert(user: models.User): Future[Unit] = Future.successful(map.update(user.U_ID, user))
-//}
-
 
 class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     extends UserDao

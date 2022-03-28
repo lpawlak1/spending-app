@@ -1,4 +1,7 @@
 
+/** {*/
+/*    font-size: 22px;*/
+/*}*/
 body {
     font-family: 'Outfit', sans-serif;
     background-color: #FFBA5B;
@@ -20,7 +23,7 @@ body {
     box-shadow: 9px 6px 17px -13px rgba(66, 68, 90, 1);
 }
 
-p, li, ul {
+p, li, ul, button {
     font-size: 22px;
 }
 
@@ -136,4 +139,21 @@ p, li, ul {
 .summary-div p {
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+button{
+    font-size: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    outline: none;
+    border: 0;
+    background: none;
+    -webkit-appearance: none;
+}
+button:hover {
+    background-color: #ff9100;
+    color: #ffffff;
 }

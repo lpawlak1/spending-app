@@ -3,8 +3,10 @@
 ** js is the same as styles for javascript files
 **@
 @import slick.ast.Union
-@(styles: Iterable[Call], js: Iterable[Call], title: String)
+@(styles: Iterable[Call], js: Iterable[Call], title: String)(content: Html)
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,6 +14,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@@300&display=swap" rel="stylesheet">
+    @for(x <- js) {
+        <script src="@x" defer></script>
+    }
 
     @* the link below should be default for all pages*@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/style.css") ">
@@ -19,5 +24,6 @@
     @for(x <- styles) {
         <link rel="stylesheet" href="@x">
     }
+    @content
     <title>@title</title>
 </head>
