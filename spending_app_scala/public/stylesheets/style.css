@@ -4,7 +4,8 @@
 /*}*/
 body {
     font-family: 'Outfit', sans-serif;
-    background-color: #FFBA5B;
+    #background-color: #FFBA5B;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFBA5B), to(#ffe4c3)) fixed;
 }
 
 .nav-wrapper {
