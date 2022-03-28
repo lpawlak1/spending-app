@@ -23,7 +23,7 @@ body {
     box-shadow: 9px 6px 17px -13px rgba(66, 68, 90, 1);
 }
 
-p, li, ul, button {
+p, li, ul, button, input{
     font-size: 22px;
 }
 
@@ -153,7 +153,105 @@ button{
     background: none;
     -webkit-appearance: none;
 }
+
 button:hover {
     background-color: #ff9100;
     color: #ffffff;
 }
+
+.nav-wrapper-login{
+    width: 100%;
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.login-background {
+    align-self: center;
+    display: grid;
+    margin: 0px;
+    margin-right: auto;
+    margin-left: auto;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 650px;
+    height: 450px;
+    padding: 100px;
+}
+
+.element-gradient{
+    border: 10px solid aliceblue;
+    padding: 10px;
+    background-image: linear-gradient(#c1cccc,#7C9ECA, #5184c7);
+}
+
+.login-button{
+    border: 1px solid #757575;
+    background-color: #ff9100;
+    color: #ffffff;
+    padding: 10px;
+    /* font-size: 14px; */
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: auto;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.element-blue {
+    border: 3px solid aliceblue;
+    padding: 5px;
+    background-color: #7C9ECA;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    margin: 20px 0;
+    padding: 15px 50px;
+    display: inline-block;
+    box-sizing: border-box;
+
+}
+
+.login-background dl {
+    margin: 0;
+}
+
+.login-background dd {
+    margin-inline-start: 0;
+}
+
+::placeholder {
+    color: rgb(88, 87, 87);
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.center-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 140px;
+    height: 140px;
+}
+
+.login-background dt {
+    display: none;
+}
+
+dd.info {
+    display: none;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: auto;
+}
+
