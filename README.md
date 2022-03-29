@@ -34,4 +34,3 @@ Created: March 26, 2022 11:47 AM
 3. PostgreSQL
 4. Docker
 
-Jako architekturę serwera przyjmujemy hybrydę monolitu oraz architektury opartej na aktorach. Zdecydowaliśmy się na rozwiązanie hybrydowe jako że chcielibyśmy rozszerzyć swoją wiedzę na temat aktorów, lecz stworzenie sieci aktorów nie działających na pojedynczym hoście mogłoby przerosnąć nasze możliwości. Baza także jest pojedyńczą instancją, dzielenie bazy nie jest potrzebne przy tak małym projektcie.
