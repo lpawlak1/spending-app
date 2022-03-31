@@ -168,6 +168,13 @@ button:hover {
     align-content: center;
 }
 
+.nav-wrapper-user-config {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
 .login-background {
     align-self: center;
     display: grid;
@@ -180,6 +187,18 @@ button:hover {
     width: 650px;
     height: 450px;
     padding: 100px;
+}
+
+.user-config-bg {
+    align-self: center;
+    width: 70%;
+    padding: 50px;
+    margin: 0px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
 }
 
 .element-gradient{
@@ -225,6 +244,10 @@ input[type=text], input[type=password] {
     margin-inline-start: 0;
 }
 
+.login-background dd.error {
+    display: none;
+}
+
 ::placeholder {
     color: rgb(88, 87, 87);
     font-size: 22px;
@@ -254,5 +277,12 @@ form {
     justify-content: center;
     height: auto;
     width: auto;
+}
+
+.dialog-closed {
+    display: none;
+}
+.dialog-open {
+    display: block;
 }
 
