@@ -6,16 +6,13 @@ import akka.pattern.ask
 import akka.util.Timeout
 import play.api.data.{Form, Mapping}
 import play.api.data.Forms.{bigDecimal, date, mapping, nonEmptyText, of, optional}
-import play.api.data.format.Formats.bigDecimalFormat
 
 import javax.inject._
 import play.api.mvc._
-import play.api.routing.sird.?
-import services.UserAuthorizationActor
 import services.UserAuthorizationActor.UserAuthorization
 
 import java.util.Date
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
 

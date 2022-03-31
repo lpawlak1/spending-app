@@ -26,7 +26,7 @@ class UserAuthorizationActor @Inject() (userDao: UserDao) extends Actor{
               else true
             case _  => false
           }
-        case None => Future{false}
+        case None => Future(false)
       }
       sender() ! ret
     }
