@@ -1,0 +1,5 @@
+package daos
+
+class CategoryDao {
+
+}

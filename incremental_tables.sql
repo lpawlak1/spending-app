@@ -62,3 +62,39 @@ alter table public.User drop column u_name;
 alter table public.User add column u_name varchar generated always as ( u_firstname || ' ' || u_lastname ) stored; -- niestety nie ma virtual, ale koncept zostaje
 -- u_name no longer as it was
 
+-- SCOPE 3 31.03.2022
+
+create table Budget(
+    B_ID serial primary key,
+    B_Amount money not null,
+    B_Starting_Date timestamp not null default now(),
+    U_ID int not null,
+    B_Active boolean not null default true,
+    AddedDate timestamp not null default now(),
+    constraint fk_user_budget
+        foreign key (U_ID)
+            REFERENCES public.User (U_ID)
+);
+
+-- jako ze kazdy uzytkownik musi miec budget to funkcja do tego
+drop function if exists pg_temp.insert_budget(int);
+create function pg_temp.insert_budget(int)
+    returns int as $$
+BEGIN
+    insert into Budget(B_Amount, U_ID) values (1000.0, $1);
+    return 1;
+end;
+$$ language plpgsql;
+
+select pg_temp.insert_budget(u_id) from public.User;
+
+create table Category(
+    Cat_ID serial primary key,
+    Cat_Name varchar not null,
+    Cat_Superior_Cat_Id int,
+    constraint fk_cat_sup_cat foreign key (Cat_Superior_Cat_Id) references Category(Cat_ID)
+);
+
+insert into Category(Cat_Name) VALUES ('Transportation');
+insert into Category(Cat_Name) VALUES ('Food');
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Drinks', (select Cat_ID from Category where cat_name = 'Food'));
