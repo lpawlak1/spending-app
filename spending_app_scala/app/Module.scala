@@ -1,8 +1,9 @@
 import com.google.inject.AbstractModule
-import java.time.Clock
 
-import services.{ApplicationTimer, AtomicCounter, Counter}
+import java.time.Clock
+import services.{ApplicationTimer, AtomicCounter, Counter, UserAuthorizationActor}
 import daos._
+import play.api.libs.concurrent.AkkaGuiceSupport
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -14,7 +15,7 @@ import daos._
  * adding `play.modules.enabled` settings to the `application.conf`
  * configuration file.
  */
-class Module extends AbstractModule {
+class Module extends AbstractModule with AkkaGuiceSupport {
 
   override def configure() = {
     // Use the system clock as the default implementation of Clock
@@ -28,6 +29,8 @@ class Module extends AbstractModule {
     bind(classOf[UserDao]).to(classOf[UserDaoSlick])
     //Set UserLogin for public.UserLogin db connection
     bind(classOf[UserLoginDao]).to(classOf[UserLoginSlick])
+    //Bind UserAuthorizationActor
+    bindActor[UserAuthorizationActor]("user-authorization-actor")
   }
 
 }

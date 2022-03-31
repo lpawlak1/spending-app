@@ -1,0 +1,44 @@
+@(budgetForm: Form[Budget])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@*, incomeForm: Form[IncomeForm])*@
+
+<!DOCTYPE html>
+<html lang="pl">
+    @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
+          List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "user_config").map(x => routes.Assets.versioned(s"javascripts/${x}.js")), "User Configuration"){ }
+<body>
+
+    <div class="nav-wrapper-user-config">
+        <div class="user-config-bg element-gradient">
+        </div>
+    </div>
+
+    <a href="#" data-micromodal-trigger="modal-1">open modal</a>
+
+    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header">
+                    <h2 class="modal__title" id="modal-1-title">
+                        Budget
+                    </h2>
+                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="modal-1-content">
+                    @helper.form(action = routes.LoginController.post_login_page) {
+                        @helper.CSRF.formField
+                        <p>New budget</p>
+                        @helper.inputText(budgetForm("amount"), Array("class" -> "modal__text", "placeholder" -> "1000.00", "id" -> "amount", "name" -> "amount", "min" -> "1", "step" -> "0.01", "type" -> "number").map(x => {Symbol(x._1) -> x._2}) :  _*)
+                        <p>Starting when?</p>
+                        @helper.inputText(budgetForm("startingDate"), Array("class" -> "modal__date", "id" -> "startingDate", "name" -> "startingDate", "type" -> "date").map(x => {Symbol(x._1) -> x._2}) :  _* )
+                        <button class="modal__btn modal__btn-primary">Submit change</button>
+                    }
+                </main>
+                <footer class="modal__footer">
+                    <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Cancel</button>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

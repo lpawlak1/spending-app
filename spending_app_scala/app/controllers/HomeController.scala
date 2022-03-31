@@ -1,12 +1,10 @@
 package controllers
 
-import models.{UserMinimal }
 
 import javax.inject._
 import play.api.mvc._
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 import scala.language.postfixOps
 import java.time.LocalDateTime
 

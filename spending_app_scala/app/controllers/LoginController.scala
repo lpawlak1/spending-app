@@ -4,7 +4,6 @@ import javax.inject._
 import akka.actor.ActorSystem
 import controllers.LoginUtils.LOGIN_ERROR_LINK
 import daos.{UserDao, UserLoginDao}
-import models.LoginUser
 import play.api.mvc._
 import play.api.data.Forms._
 import play.api.data.Form
@@ -47,21 +46,6 @@ class LoginController @Inject()(
       val email = userData.email
       val password = userData.password
       val user = userLoginDao.findOneByEmail(email)
-//      user.map {
-//        case usr: Option[models.User] =>
-//          usr match {
-//            case Some(uu) =>
-//              uu.password match {
-//                case Some(pwd) =>
-//                  if (pwd == password) Some(Redirect(routes.HomeController.index(Some(usr.get.name))))
-//                  else None
-//                case None => None
-//              }
-//            case None => None
-//          }
-//        case _  => None
-//      }.map(r => r.getOrElse(Redirect(LOGIN_ERROR_LINK)))
-
       user.map {
         _.filter (u => u.password == password).collectFirst(u => u) match {
           case Some(u) =>

@@ -8,6 +8,9 @@
 # protected index controller
 GET     /                           controllers.HomeController.index(user_id: Option[String])
 
+#protected userconfig controller
+GET    /userconfig                  controllers.UserConfigController.config_page(user_id: Option[String])
+
 # Login screen to submit login information and authenticate
 GET     /login                      controllers.LoginController.get_login_page
 POST    /login                      controllers.LoginController.post_login_page
