@@ -11,6 +11,9 @@ GET     /                           controllers.HomeController.index(user_id: Op
 #protected userconfig controller
 GET    /userconfig                  controllers.UserConfigController.config_page(user_id: Option[String])
 
+#post na submit z userconfig budgetu
+POST   /userconfig/budget            controllers.UserConfigController.submit_budget(user_id: Option[String])
+
 # Login screen to submit login information and authenticate
 GET     /login                      controllers.LoginController.get_login_page
 POST    /login                      controllers.LoginController.post_login_page
