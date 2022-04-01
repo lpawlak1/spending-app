@@ -1,4 +1,4 @@
-@(budgetForm: Form[Budget])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@(budgetForm: Form[SingleAmount])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 @*, incomeForm: Form[IncomeForm])*@
 
 <!DOCTYPE html>
@@ -23,13 +23,11 @@
                     </h2>
                     <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
                 </header>
-                <main class="modal__content" id="modal-1-content">
-                    @helper.form(action = routes.LoginController.post_login_page) {
+                <main class="modal__content" id="modal-1-content" id="budget-form-wrapper">
+                    @helper.form(action = routes.UserConfigController.submit_budget(None)){
                         @helper.CSRF.formField
-                        <p>New budget</p>
+                        <p>New value</p>
                         @helper.inputText(budgetForm("amount"), Array("class" -> "modal__text", "placeholder" -> "1000.00", "id" -> "amount", "name" -> "amount", "min" -> "1", "step" -> "0.01", "type" -> "number").map(x => {Symbol(x._1) -> x._2}) :  _*)
-                        <p>Starting when?</p>
-                        @helper.inputText(budgetForm("startingDate"), Array("class" -> "modal__date", "id" -> "startingDate", "name" -> "startingDate", "type" -> "date").map(x => {Symbol(x._1) -> x._2}) :  _* )
                         <button class="modal__btn modal__btn-primary">Submit change</button>
                     }
                 </main>

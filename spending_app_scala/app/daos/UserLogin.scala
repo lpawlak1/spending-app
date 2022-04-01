@@ -2,16 +2,13 @@ package daos
 
 
 import models._
-
-import scala.concurrent.Future
 import play.api.db.slick._
 import slick.dbio.DBIOAction
 import slick.jdbc.{GetResult, JdbcProfile}
 import slick.lifted.ProvenShape
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import scala.concurrent.Future
 
 
 class UserLoginSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -21,9 +18,11 @@ class UserLoginSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   import dbConfig.profile.api._
 
   private class UserLoginTable(tag: Tag)
-    extends Table[models.LoginUser](tag, Some("public"),"userLogin") {
+    extends Table[models.LoginUser](tag, Some("public"), "userLogin") {
     def u_id = column[Int]("u_id")
+
     def u_email = column[String]("u_email")
+
     def u_password = column[String]("u_password")
 
     def * : ProvenShape[LoginUser] = (u_id, u_email, u_password).mapTo[models.LoginUser]
@@ -37,6 +36,7 @@ class UserLoginSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   }
 
   implicit val getUserPlainResult2: GetResult[models.LoginUser] = GetResult(r => models.LoginUser(r.<<, r.<<, r.<<))
+
   def findOneByEmail(email: String): Future[Vector[models.LoginUser]] = db.run {
     sql"""
             select u_id, u_email, u_password
@@ -47,5 +47,6 @@ class UserLoginSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
 trait UserLoginDao {
   def insert(user: models.LoginUser): Future[Unit]
+
   def findOneByEmail(email: String): Future[Vector[models.LoginUser]]
 }

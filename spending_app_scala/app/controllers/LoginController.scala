@@ -1,13 +1,13 @@
 package controllers
 
-import javax.inject._
 import akka.actor.ActorSystem
 import controllers.LoginUtils.LOGIN_ERROR_LINK
-import daos.{UserDao, UserLoginDao}
-import play.api.mvc._
-import play.api.data.Forms._
+import daos.UserLoginDao
 import play.api.data.Form
+import play.api.data.Forms._
+import play.api.mvc._
 
+import javax.inject._
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
@@ -19,16 +19,16 @@ case class UserData(email: String, password: String)
 
 @Singleton
 class LoginController @Inject()(
-  cc: ControllerComponents,
-  actorSystem: ActorSystem,
-  userLoginDao: UserLoginDao
-)(implicit exec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
+                                 cc: ControllerComponents,
+                                 actorSystem: ActorSystem,
+                                 userLoginDao: UserLoginDao
+                               )(implicit exec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   object BasicForm {
     val form: Form[UserData] = Form(
       mapping(
         "email" -> nonEmptyText,
-        "password"  -> nonEmptyText
+        "password" -> nonEmptyText
       )(UserData.apply)(UserData.unapply)
     )
   }
@@ -39,7 +39,9 @@ class LoginController @Inject()(
   def post_login_page(): Action[AnyContent] = Action.async { implicit request =>
     val formData: Form[UserData] = BasicForm.form.bindFromRequest()
     if (formData.hasErrors) {
-      Future{BadRequest(views.html.login(formData))}
+      Future {
+        BadRequest(views.html.login(formData))
+      }
     }
     else {
       val userData = formData.get
@@ -47,7 +49,7 @@ class LoginController @Inject()(
       val password = userData.password
       val user = userLoginDao.findOneByEmail(email)
       user.map {
-        _.filter (u => u.password == password).collectFirst(u => u) match {
+        _.filter(u => u.password == password).collectFirst(u => u) match {
           case Some(u) =>
             Redirect(s"/?user_id=${u.id}")
           case None =>
