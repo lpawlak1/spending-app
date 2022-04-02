@@ -4,6 +4,7 @@ package controllers
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
+import daos.UserConfigDao
 import play.api.data.Form
 import play.api.data.Forms.{bigDecimal, mapping}
 import play.api.mvc._
@@ -19,7 +20,8 @@ case class SingleAmount(amount: BigDecimal)
 @Singleton
 class UserConfigController @Inject()(
                                       @Named("user-authorization-actor") userAuthorizationActor: ActorRef,
-                                      cc: ControllerComponents
+                                      cc: ControllerComponents,
+                                      userConfigDao: UserConfigDao
                                     )(implicit ec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   implicit val timeout: Timeout = 5.seconds
@@ -50,12 +52,15 @@ class UserConfigController @Inject()(
       }
     }
     else {
+      if (user_id.isEmpty) {
+        Future {
+          "&err_code=1&err_msg="
+        }
+      }
       val userData = budgetData.get
       val amount = userData.amount
-      // update
-      //actor.update_budget(amount, user_id)
-      // show
-      Future("")
+      userConfigDao.insertBudget(user_id.get.toInt, amount.toDouble).map(x =>
+        s"&success=${x.toInt}")
     }
     addition.map(x => Redirect(ret + x))
   }

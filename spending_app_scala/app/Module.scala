@@ -31,6 +31,8 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[UserLoginDao]).to(classOf[UserLoginSlick])
     //Set CategoryDao for public.Category db connection
     bind(classOf[CategoryDao]).to(classOf[CategoryDaoSlick])
+    //Set UserConfigDao for user config tables db connection
+    bind(classOf[UserConfigDao]).to(classOf[UserConfigDaoSlick])
     //Bind UserAuthorizationActor
     bindActor[UserAuthorizationActor]("user-authorization-actor")
   }
