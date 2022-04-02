@@ -193,3 +193,40 @@ begin
     from public.get_all_months_between(startingDate, endingDate) gamb;
 end;
 $body$ language plpgsql;
+
+-- scope 02.04.2022
+
+-- Był błąd, trzeba go naprawić
+drop function if exists public.user_email_trigger_proc() cascade;
+create function public.user_email_trigger_proc() returns trigger as $user_email_tri$
+declare
+    email varchar;
+begin
+    -- trzeba sprawdzic czy na pewno w UserLogin ten mail nie istnieje i przerwać inserta jeżeli istnieje
+    email := NEW.u_primaryemail;
+    IF exists (select ul.u_id from public.userlogin ul where ul.U_Email = email and (NEW.U_id is null or ul.U_ID != NEW.U_id))
+        OR exists(select ul.u_primaryemail from public."user" ul where ul.U_PrimaryEmail = email and ul.u_id != NEW.u_id) THEN
+        RAISE EXCEPTION '% % can''t have be placed in db', NEW.U_firstname, NEW.U_lastname;
+    END IF;
+    return NEW;
+end;
+$user_email_tri$ language plpgsql;
+
+CREATE TRIGGER email_trigger_user BEFORE INSERT OR UPDATE ON public."user"
+    FOR EACH ROW EXECUTE PROCEDURE public.user_email_trigger_proc();
+
+create table Colors (
+    Col_ID serial primary key ,
+    Col_Name varchar not null unique ,
+    Col_Filename varchar not null unique
+);
+
+alter table public.user add column Col_ID int;
+alter table public.user add constraint fk_user_color foreign key (Col_ID) references Colors (Col_ID);
+
+insert into colors (Col_Name, Col_Filename) values ('Orange', 'orange.css');
+insert into colors (Col_Name, Col_Filename) values ('Pink', 'pink.css');
+
+update public.user set Col_ID = (select col_id from colors limit 1);
+
+

@@ -6,7 +6,8 @@ create table public.User (
     U_PrimaryEmail varchar not null,
     u_firstname varchar not null,
     u_lastname varchar not null,
-    U_Name varchar generated always as ( u_firstname || ' ' || u_lastname ) stored
+    U_Name varchar generated always as ( u_firstname || ' ' || u_lastname ) stored,
+    Col_ID int
 );
 
 -- create table with logins
@@ -22,6 +23,14 @@ create table public.UserLogin(
 create index if not exists email_w_passwd_index on public.UserLogin (u_email) include (u_password);
 create unique index if not exists id_email_login on public.UserLogin(U_id, U_Email);
 
+create table Colors (
+    Col_ID serial primary key ,
+    Col_Name varchar not null unique ,
+    Col_Filename varchar not null unique
+);
+
+alter table public.user add constraint fk_user_color foreign key (Col_ID) references Colors (Col_ID);
+
 -- just initial data
 insert into public.User (U_Role, U_PrimaryEmail, u_firstname, u_lastname)
 values ('Admin', 'admin@admin', 'admin_firstname', 'admin_lastname');
@@ -36,8 +45,8 @@ declare
 begin
     -- trzeba sprawdzic czy na pewno w UserLogin ten mail nie istnieje i przerwać inserta jeżeli istnieje
     email := NEW.u_primaryemail;
-    IF exists (select count(*) from public.userlogin ul where ul.U_Email = email and (NEW.U_id is null or ul.U_ID != NEW.U_id))
-        OR exists(select ul.u_primaryemail from public."user" ul where ul.U_PrimaryEmail = email) THEN
+    IF exists (select ul.u_id from public.userlogin ul where ul.U_Email = email and (NEW.U_id is null or ul.U_ID != NEW.U_id))
+        OR exists(select ul.u_primaryemail from public."user" ul where ul.U_PrimaryEmail = email and ul.u_id != NEW.u_id) THEN
         RAISE EXCEPTION '% % can''t have be placed in db', NEW.U_firstname, NEW.U_lastname;
     END IF;
     return NEW;
@@ -135,3 +144,5 @@ begin
     from public.get_all_months_between(startingDate, endingDate) gamb;
 end;
 $body$ language plpgsql;
+
+
