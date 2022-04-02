@@ -35,15 +35,14 @@ class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
     def u_name = column[String]("u_name")
 
-    def u_email = column[String]("u_email")
+    def u_email = column[String]("u_primaryemail")
 
     def u_role = column[String]("u_role")
 
-    def u_password = column[Option[String]]("u_password")
 
     def RegistrationDate = column[LocalDateTime]("registrationdate")
 
-    def * : ProvenShape[User] = (u_id, u_name, u_email, u_role, u_password, RegistrationDate).mapTo[models.User]
+    def * : ProvenShape[User] = (u_id, u_name, u_email, u_role, RegistrationDate).mapTo[models.User]
   }
 
   private val table = TableQuery[UserTable]
@@ -59,18 +58,18 @@ class UserDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
   def findOne(id: Int): Future[Option[models.UserMinimal]] = db.run {
     sql"""
-            select u_id, u_name, u_email, u_role
+            select u_id, u_name, u_primaryemail, u_role
             from public.user
             where u_id = ${id}""".as[models.UserMinimal].headOption
   }
 
-  implicit val getUserPlainResult2: GetResult[models.User] = GetResult(r => models.User(r.<<, r.<<, r.<<, r.<<, r.<<, LocalDateTime.parse(r.<<, DateTimeFormatter.ofPattern("yyyy MM dd HH mm ss"))))
+  implicit val getUserPlainResult2: GetResult[models.User] = GetResult(r => models.User(r.<<, r.<<, r.<<, r.<<, LocalDateTime.parse(r.<<, DateTimeFormatter.ofPattern("yyyy MM dd HH mm ss"))))
 
   def findOneByEmail(email: String): Future[Option[models.User]] = db.run {
     sql"""
-            select u_id, u_name, u_email, u_role, u_password, to_char(registrationdate,'YYYY MM DD HH MI SS') as registrationdate
+            select u_id, u_name, u_primaryemail, u_role, to_char(registrationdate,'YYYY MM DD HH MI SS') as registrationdate
             from public.user
-            where u_email = ${email}""".as[models.User].headOption
+            where u_primaryemail = ${email}""".as[models.User].headOption
   }
 
   override def findOnesUsername(id: Int): Future[Option[String]] = db.run(table.filter(_.u_id === id).map(_.u_name).result.headOption)

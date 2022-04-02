@@ -15,9 +15,8 @@ case class User(id: Int,
                 name: String,
                 email: String,
                 role: String,
-                password: Option[String],
                 registrationDate: LocalDateTime) {
-  def tupled(tuple: (Int, String, String, String, Option[String], LocalDateTime)): User = {
+  def tupled(tuple: (Int, String, String, String, LocalDateTime)): User = {
     (User.apply _).tupled(tuple)
   }
 }

@@ -1,5 +1,3 @@
 package models
 
-class ThemeColor {
-
-}
+case class ThemeColor(id: Int, name: String, filename: String)
