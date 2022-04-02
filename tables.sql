@@ -135,3 +135,27 @@ begin
     from public.get_all_months_between(startingDate, endingDate) gamb;
 end;
 $body$ language plpgsql;
+
+-- create table Category(
+--     Cat_ID serial primary key,
+--     Cat_Name varchar not null,
+--     Cat_Superior_Cat_Id int,
+--     constraint fk_cat_sup_cat foreign key (Cat_Superior_Cat_Id) references Category(Cat_ID)
+-- );
+--
+-- insert into Category(Cat_Name) VALUES ('Transportation');
+-- insert into Category(Cat_Name) VALUES ('Food');
+
+create table Expense(
+    Ex_ID serial primary key,
+    Ex_name varchar,
+    Cat_ID int not null,
+    U_ID int not null,
+    AddedDateTime date not null,
+    LastModificationDate date not null,
+    DateOfPurchase date not null,
+    Description varchar,
+    Price money not null,
+    Deleted bool not null,
+    constraint fk_user_expense foreign key (U_ID) references public.User (U_ID)
+);
