@@ -1,6 +1,7 @@
 package services
 
 import akka.actor._
+import akka.event.Logging
 import daos.UserDao
 
 import javax.inject.Inject
@@ -16,6 +17,15 @@ class UserAuthorizationActor @Inject()(userDao: UserDao) extends Actor {
 
   import UserAuthorizationActor._
   import context.dispatcher
+
+  val log = Logging(context.system, this)
+
+  override def preStart() = {
+    log.error("UserAuthoriztionActor created")
+  }
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+    log.error(reason, "UserAuthorizationActor recreated")
+  }
 
   def receive: Receive = {
     case UserAuthorization(user_id: Option[String]) => {

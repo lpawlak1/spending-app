@@ -1,6 +1,7 @@
 package daos
 
 
+import akka.event.Logging
 import models._
 import play.api.db.slick._
 import slick.dbio.DBIOAction
@@ -14,6 +15,7 @@ import scala.concurrent.Future
 class UserLoginSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
   extends UserLoginDao
     with HasDatabaseConfigProvider[JdbcProfile] {
+
 
   import dbConfig.profile.api._
 

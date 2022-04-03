@@ -33,17 +33,6 @@ class HomeController @Inject()(
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
         case true => {
 
-          userDao.findOnesUsername(user_id.get.toInt).map {
-            case usr: Option[String] => {
-              userConfigDao.getCurrentActiveBudget(user_id.get.toInt).map {
-                current_budget => Ok(views.html.index(LocalDateTime.now(), (current_budget.get, user_id.get.toInt), usr.get))
-              }
-//              Await.result(userConfigDao.getCurrentActiveBudget(user_id.get.toInt), Duration.Inf)
-//              userConfigDao.getCurrentActiveBudget(1).isCompleted
-            }
-            case _ => Redirect(LoginUtils.LOGIN_ERROR_LINK)
-          }
-
           val budgetFuture = userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
           val usernameFuture = userDao.findOnesUsername(user_id.get.toInt)
 
