@@ -37,9 +37,14 @@ class UserConfigController @Inject()(
   def config_page(user_id: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
-        case true => Ok(views.html.user_config(UserConfigForms.singleAmount))
-        case false => Redirect("/login?err_no=2")
-      }
+        case true => {
+          userConfigDao.getCurrentActiveBudget(user_id.get.toInt).map {
+            case Some(budget) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)), user_id))
+            case None => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)), user_id))
+          }
+        }
+        case false => Future(Redirect("/login?err_no=2"))
+      }.flatten
     }
   }
 
