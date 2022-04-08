@@ -11,9 +11,13 @@ import scala.concurrent.Future
 
 trait ExpenseDao {
   def findAll: Future[Seq[Expense]]
+
   def findExpenseCategory(ex_id: Int): Future[Int]
+
   def findExpenseSubCategories(expense_id: Int): Future[Int]
-  def findDateOfPurchase(start_date: LocalDateTime, end_date: LocalDateTime): Future[Option[LocalDateTime]]
+
+  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Int]
+
   def findDeleted(del: Boolean): Future[Seq[Expense]]
 
   def insert(ex: Expense): Future[Int]
@@ -61,30 +65,51 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
   def findExpenseCategory(ex_id: Int): Future[Int] = db.run {
     sqlu"""
-          select C.Cat_Name
-          from Category C
-              join Expense E on E.Cat_ID = C.Cat_ID
+          select E.Ex_Name,
+                 E.DateOfPurchase,
+                 C.Cat_Name,
+                 E.Price,
+                 E.Description
+          from Expense E
+              join Category C on E.Cat_ID = C.Cat_ID
+          where E.Ex_ID = ${ex_id}
         """
   }
 
   def findExpenseSubCategories(ex_id: Int): Future[Int] = db.run {
     sqlu"""
-          select C.Cat_Name
-          from Category C
-              join Expense E on E.Cat_ID = C.Cat_ID
+          select E.Ex_Name,
+                 E.DateOfPurchase,
+                 C.Cat_Name,
+                 E.Price,
+                 E.Description
+          from Expense E
+              join Category C on E.Cat_ID = C.Cat_ID
           where C.Cat_Superior_Cat_Id  = E.Cat_ID
+            and E.Ex_ID = ${ex_id}
         """
   }
 
-  def findDateOfPurchase(start_date: LocalDateTime, end_date: LocalDateTime): Future[Option[LocalDateTime]] = db.run {
-    // TODO:
+  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Int] = db.run {
+    sqlu"""
+          select E.Ex_Name,
+                 E.DateOfPurchase,
+                 C.Cat_Name,
+                 E.Price,
+                 E.Description
+          from Expense E
+              join Category C on E.Cat_ID = C.Cat_ID
+          where E.DateOfPurchase between ${start_date} and ${end_date}
+        """
   }
 
   def insert(ex: Expense): Future[Int] = db.run {
     sqlu"""
-          insert into expense values (${ex.expense_id}, ${ex.expense_name}, ${ex.category_id},
-                                      ${ex.user_id}, ${ex.added_date}, ${ex.last_mod_date},
-                                      ${ex.purchase_date}, ${ex.desc}, ${ex.price}, ${ex.deleted})
+          insert into expense (Ex_ID, Ex_Name, Cat_ID, U_ID, AddedDateTime, LastModificationDateTime,
+                               DateOfPurchase, Description, Price, Deleted)
+                               values (${ex.expense_id}, ${ex.expense_name}, ${ex.category_id},
+                                       ${ex.user_id}, ${ex.added_date}, ${ex.last_mod_date},
+                                       ${ex.purchase_date}, ${ex.desc}, ${ex.price}, ${ex.deleted})
         """
   }
 }
