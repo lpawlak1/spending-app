@@ -121,7 +121,7 @@ p, li, ul, button, input{
 }
 
 .li_main .ul_main:hover {
-    background-color: #7C9ECA;
+    /*background-color: #7C9ECA;*/
 }
 
 .li_main .ul_main:nth-child(1){
@@ -314,4 +314,8 @@ main .color__btn {
 
 .user-config-wrapper {
     width: 650px;
+}
+
+.width_default {
+    width: auto;
 }

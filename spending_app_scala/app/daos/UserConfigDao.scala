@@ -20,7 +20,10 @@ class UserConfigDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfi
          from public.budget
          where u_id = ${user_id}
            and b_active = true
-           and to_date(to_char(now(), 'YYYY-MM'), 'YYYY-MM') = b_starting_date;
+           and b_starting_date = (
+               select max(b_starting_date) from budget where
+                 u_id = ${user_id}
+                 and b_active = true);
        """.as[Double].headOption
   }
 

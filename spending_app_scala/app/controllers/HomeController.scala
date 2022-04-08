@@ -40,6 +40,8 @@ class HomeController @Inject()(
           res.map {
             case (Some(budget), Some(username)) =>
               Ok(views.html.index(LocalDateTime.now(), (budget, user_id.get.toInt), username))
+            case (_, Some(username)) =>
+              Ok(username + " has no active budget")
             case (_,_) =>
               Redirect(LoginUtils.LOGIN_ERROR_LINK)
           }
