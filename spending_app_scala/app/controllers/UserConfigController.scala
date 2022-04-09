@@ -35,9 +35,6 @@ class UserConfigController @Inject()(
     )
   }
 
-
-
-
   def config_page(user_id: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
@@ -60,46 +57,60 @@ class UserConfigController @Inject()(
   }
 
   def submit_budget(user_id: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    val budgetData: Form[SingleAmount] = UserConfigForms.singleAmount.bindFromRequest()
-    val ret = routes.UserConfigController.config_page(user_id).url
-    val addition = if (budgetData.hasErrors) {
-      Future {
-        "&err_code=1&err_msg="
-      }
-    }
-    else {
-      if (user_id.isEmpty) {
-        Future {
-          "&err_code=1&err_msg="
+    (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
+      case true => {
+        val budgetData: Form[SingleAmount] = UserConfigForms.singleAmount.bindFromRequest()
+        val ret = routes.UserConfigController.config_page(user_id).url
+        val addition = if (budgetData.hasErrors) {
+          Future {
+            "&err_code=1&err_msg="
+          }
         }
+        else {
+          if (user_id.isEmpty) {
+            Future {
+              "&err_code=1&err_msg="
+            }
+          }
+          val userData = budgetData.get
+          val amount = userData.amount
+          userConfigDao.insertBudget(user_id.get.toInt, amount.toDouble).map(x =>
+            s"&success=${x.toInt}")
+        }
+        addition.map(x => Redirect(ret + x))
       }
-      val userData = budgetData.get
-      val amount = userData.amount
-      userConfigDao.insertBudget(user_id.get.toInt, amount.toDouble).map(x =>
-        s"&success=${x.toInt}")
-    }
-    addition.map(x => Redirect(ret + x))
+      case false => {
+        Future.successful(Redirect("/login"))
+      }
+    }.flatten
   }
 
   def change_color(user_id: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    val colorData: Form[SingleAmount] = UserConfigForms.singleAmount.bindFromRequest()
-    val ret = routes.UserConfigController.config_page(user_id).url
-    val addition = if (colorData.hasErrors) {
-      Future {
-        "&err_code=1&err_msg="
-      }
-    }
-    else {
-      if (user_id.isEmpty) {
-        Future {
-          "&err_code=1&err_msg="
+    (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
+      case true => {
+        val colorData: Form[SingleAmount] = UserConfigForms.singleAmount.bindFromRequest()
+        val ret = routes.UserConfigController.config_page(user_id).url
+        val addition = if (colorData.hasErrors) {
+          Future {
+            "&err_code=1&err_msg="
+          }
         }
+        else {
+          if (user_id.isEmpty) {
+            Future {
+              "&err_code=1&err_msg="
+            }
+          }
+          val color = colorData.get.amount.toInt
+          userConfigDao.changeColor(user_id.get.toInt, color).map(x =>
+            s"&success=${x.toInt}")
+        }
+        addition.map(x => Redirect(ret + x))
       }
-      val color = colorData.get.amount.toInt
-      userConfigDao.changeColor(user_id.get.toInt, color).map(x =>
-        s"&success=${x.toInt}")
-    }
-    addition.map(x => Redirect(ret + x))
+      case false => {
+        Future.successful(Redirect("/login"))
+      }
+    }.flatten
   }
 
 }
