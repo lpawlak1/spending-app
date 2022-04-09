@@ -121,7 +121,7 @@ p, li, ul, button, input{
 }
 
 .li_main .ul_main:hover {
-    background-color: #7C9ECA;
+    /*background-color: #7C9ECA;*/
 }
 
 .li_main .ul_main:nth-child(1){
@@ -286,3 +286,39 @@ form {
     display: block;
 }
 
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-row .change-button {
+    width: 100px;
+    margin: 0px;
+}
+
+main .color__btn {
+    margin: 10px;
+}
+
+.powrot-strzaleczka {
+    font-size: 6rem;
+    color: white;
+}
+
+#strzaleczka {
+    text-decoration: none;
+    color: inherit;
+}
+
+.user-config-wrapper {
+    width: 650px;
+}
+
+.width_default {
+    width: auto;
+}
+.hidden {
+    display: none;
+}

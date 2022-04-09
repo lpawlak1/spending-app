@@ -1,7 +1,7 @@
 import com.google.inject.AbstractModule
 
 import java.time.Clock
-import services.{ApplicationTimer, AtomicCounter, Counter, UserAuthorizationActor}
+import services.{ApplicationTimer, UserAuthorizationActor}
 import daos._
 import play.api.libs.concurrent.AkkaGuiceSupport
 
@@ -23,14 +23,14 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     // Ask Guice to create an instance of ApplicationTimer when the
     // application starts.
     bind(classOf[ApplicationTimer]).asEagerSingleton()
-    // Set AtomicCounter as the implementation for Counter.
-    bind(classOf[Counter]).to(classOf[AtomicCounter])
     //Set userDAO for public.user db connection
     bind(classOf[UserDao]).to(classOf[UserDaoSlick])
     //Set UserLogin for public.UserLogin db connection
     bind(classOf[UserLoginDao]).to(classOf[UserLoginSlick])
     //Set CategoryDao for public.Category db connection
     bind(classOf[CategoryDao]).to(classOf[CategoryDaoSlick])
+    //Set UserConfigDao for user config tables db connection
+    bind(classOf[UserConfigDao]).to(classOf[UserConfigDaoSlick])
     //Bind UserAuthorizationActor
     bindActor[UserAuthorizationActor]("user-authorization-actor")
   }

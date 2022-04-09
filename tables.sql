@@ -6,7 +6,8 @@ create table public.User (
     U_PrimaryEmail varchar not null,
     u_firstname varchar not null,
     u_lastname varchar not null,
-    U_Name varchar generated always as ( u_firstname || ' ' || u_lastname ) stored
+    U_Name varchar generated always as ( u_firstname || ' ' || u_lastname ) stored,
+    Col_ID int
 );
 
 -- create table with logins
@@ -22,11 +23,24 @@ create table public.UserLogin(
 create index if not exists email_w_passwd_index on public.UserLogin (u_email) include (u_password);
 create unique index if not exists id_email_login on public.UserLogin(U_id, U_Email);
 
+create table Colors (
+    Col_ID serial primary key ,
+    Col_Name varchar not null unique ,
+    Col_Filename varchar not null unique
+);
+
+insert into Colors (Col_Name, Col_Filename)
+select 'Pink', 'pink.css' union all
+select 'Orange', 'orange.css' union all
+select 'Gray', 'gray.css';
+
+alter table public.user add constraint fk_user_color foreign key (Col_ID) references Colors (Col_ID);
+
 -- just initial data
 insert into public.User (U_Role, U_PrimaryEmail, u_firstname, u_lastname)
 values ('Admin', 'admin@admin', 'admin_firstname', 'admin_lastname');
 
-insert into public.UserLogin(U_ID, U_Email, U_Password) values ((select u_id from "user" where U_Email='admin@admin'), 'admin@admin', 'admin');
+insert into public.UserLogin(U_ID, U_Email, U_Password) values ((select u_id from "user" where U_PrimaryEmail='admin@admin'), 'admin@admin', 'admin');
 
 
 drop function if exists public.user_email_trigger_proc() cascade;
@@ -36,8 +50,8 @@ declare
 begin
     -- trzeba sprawdzic czy na pewno w UserLogin ten mail nie istnieje i przerwać inserta jeżeli istnieje
     email := NEW.u_primaryemail;
-    IF exists (select count(*) from public.userlogin ul where ul.U_Email = email and (NEW.U_id is null or ul.U_ID != NEW.U_id))
-        OR exists(select ul.u_primaryemail from public."user" ul where ul.U_PrimaryEmail = email) THEN
+    IF exists (select ul.u_id from public.userlogin ul where ul.U_Email = email and (NEW.U_id is null or ul.U_ID != NEW.U_id))
+        OR exists(select ul.u_primaryemail from public."user" ul where ul.U_PrimaryEmail = email and ul.u_id != NEW.u_id) THEN
         RAISE EXCEPTION '% % can''t have be placed in db', NEW.U_firstname, NEW.U_lastname;
     END IF;
     return NEW;
@@ -135,16 +149,6 @@ begin
     from public.get_all_months_between(startingDate, endingDate) gamb;
 end;
 $body$ language plpgsql;
-
--- create table Category(
---     Cat_ID serial primary key,
---     Cat_Name varchar not null,
---     Cat_Superior_Cat_Id int,
---     constraint fk_cat_sup_cat foreign key (Cat_Superior_Cat_Id) references Category(Cat_ID)
--- );
---
--- insert into Category(Cat_Name) VALUES ('Transportation');
--- insert into Category(Cat_Name) VALUES ('Food');
 
 create table Expense(
     Ex_ID serial primary key,
