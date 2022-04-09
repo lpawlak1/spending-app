@@ -35,7 +35,7 @@ alter table public.user add constraint fk_user_color foreign key (Col_ID) refere
 insert into public.User (U_Role, U_PrimaryEmail, u_firstname, u_lastname)
 values ('Admin', 'admin@admin', 'admin_firstname', 'admin_lastname');
 
-insert into public.UserLogin(U_ID, U_Email, U_Password) values ((select u_id from "user" where U_Email='admin@admin'), 'admin@admin', 'admin');
+insert into public.UserLogin(U_ID, U_Email, U_Password) values ((select u_id from "user" where U_PrimaryEmail='admin@admin'), 'admin@admin', 'admin');
 
 
 drop function if exists public.user_email_trigger_proc() cascade;
@@ -80,7 +80,6 @@ insert into Category(Cat_Name) VALUES ('Food');
 insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Drinks', (select Cat_ID from Category where cat_name = 'Food'));
 
 
--- call insert_budget(1, cast (1500.00 as money));
 create or replace procedure insert_budget(u_id int, new_budget money)
 language plpgsql
 as $$
@@ -108,6 +107,7 @@ as $$
                );
     END;
 $$;
+call insert_budget(1, cast (1500.00 as money));
 
 drop function if exists public.get_all_months_between;
 create or replace function public.get_all_months_between(start_date timestamp, end_date timestamp) returns table(month text,year text) as

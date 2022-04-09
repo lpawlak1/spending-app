@@ -91,16 +91,13 @@ class AddExpenseController  @Inject()(
             val subCategories = category.map(x => x.asInstanceOf[Category])
 
             if (subCategories.nonEmpty){
-              val topLevelCategory = topLevelCategories.find(x => x.id == subCategories.headOption.get.parent_category_id.get) match {
-                case Some(x) => x
-                case None => throw new Exception("top level category not found")
-              }
+              val topLevelCategory = topLevelCategories.find(x => x.id == subCategories.headOption.get.parent_category_id.get)
               (topLevelCategory, subCategories)
-            } else {
-              throw new Exception("unexpected")
             }
-          })
-
+            else {
+              (None, Seq())
+            }
+          }).filter(x => x._1.isDefined).map(x => (x._1.get, x._2))
         })
       }).flatten
 
