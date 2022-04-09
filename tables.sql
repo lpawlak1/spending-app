@@ -29,6 +29,11 @@ create table Colors (
     Col_Filename varchar not null unique
 );
 
+insert into Colors (Col_Name, Col_Filename)
+select 'Pink', 'pink.css' union all
+select 'Orange', 'orange.css' union all
+select 'Gray', 'gray.css'
+
 alter table public.user add constraint fk_user_color foreign key (Col_ID) references Colors (Col_ID);
 
 -- just initial data
