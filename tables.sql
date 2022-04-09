@@ -159,3 +159,23 @@ create table Expense(
     Deleted bool not null,
     constraint fk_user_expense foreign key (U_ID) references public.User (U_ID)
 );
+
+drop function if exists public.get_users_current_budget(u_id int);
+create or replace function get_users_current_budget(u_id int) returns money as $$
+declare
+    ret_value money;
+begin
+    with
+    wydatki as (
+        select coalesce(sum(price), 0::money) as sum_price from expense e where u_id = 1 and e.dateofpurchase between to_date(to_char(now(), 'YYYY-MM'),'YYYY-MM') and to_date(to_char(now() + 1 * INTERVAL '1 Month' , 'YYYY-MM'), 'YYYY-MM')
+    )
+    select b.b_amount-w.sum_price as current_budget 
+    into ret_value
+    from budget b
+        inner join wydatki w on 1=1
+    where b.u_id = 1 and b.b_active = true and b_starting_date = (select
+        max(b_starting_date) from budget b where b.u_id = 1 and b.b_active = true);
+
+    return(ret_value);
+end;
+$$ language plpgsql;
