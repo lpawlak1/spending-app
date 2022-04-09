@@ -14,6 +14,10 @@ GET    /userconfig                  controllers.UserConfigController.config_page
 #post na submit z userconfig budgetu
 POST   /userconfig/budget            controllers.UserConfigController.submit_budget(user_id: Option[String])
 
+#Add new expense
+GET    /expense/add                 controllers.AddExpenseController.index(user_id: Option[String])
+POST   /expense/add                 controllers.AddExpenseController.post_simple_form(user_id: Option[String])
+
 # Login screen to submit login information and authenticate
 GET     /login                      controllers.LoginController.get_login_page
 POST    /login                      controllers.LoginController.post_login_page

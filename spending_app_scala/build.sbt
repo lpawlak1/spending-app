@@ -15,3 +15,6 @@ libraryDependencies ++= Seq(
     "com.typesafe.play" %% "play-slick" % "5.0.0",
     "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0"
 )
+
+//val AkkaVersion = "2.6.19"
+//libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
