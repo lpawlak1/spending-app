@@ -319,3 +319,6 @@ main .color__btn {
 .width_default {
     width: auto;
 }
+.hidden {
+    display: none;
+}

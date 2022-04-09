@@ -20,6 +20,16 @@ $(function(){
     let budget_form = $("#modal-1 form");
     budget_form.attr("action", budget_form.attr("action") + params);
 
+    let color_form = $("#modal-2 form");
+    color_form.attr("action", color_form.attr("action") + params);
+
+    color_form.find(".submitter").hover(function(e){
+        let inttt = $(this).attr("value");
+        color_form.find("#amount").val(inttt);
+        console.log(inttt);
+    });
+
+
     //strzaleczka
     const strzaleczka = $("#strzaleczka")
     strzaleczka.attr("href", strzaleczka.attr("href") + params);

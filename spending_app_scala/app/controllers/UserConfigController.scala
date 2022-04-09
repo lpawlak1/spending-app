@@ -5,6 +5,7 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import daos.UserConfigDao
+import models.ThemeColor
 import play.api.data.Form
 import play.api.data.Forms.{bigDecimal, mapping}
 import play.api.mvc._
@@ -36,16 +37,21 @@ class UserConfigController @Inject()(
 
 
 
+
   def config_page(user_id: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
         case true => {
           val budget =  userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
+
+          val userColor = userConfigDao.getUsersColor(user_id.get.toInt)
           val colors = userConfigDao.getAllColors
-          budget.zip(colors).map
-         {
-            case (Some(budget), colors)=> Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)), colors ,  user_id))
-            case (_,colors) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)), colors ,user_id))
+
+          userColor.zip(colors).zip(budget).map {
+            case ((Some(userColor), colors), Some(budget)) => {
+              Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)),UserConfigForms.singleAmount, colors, user_id, userColor))
+            }
+            case ((_,colors),_) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)),UserConfigForms.singleAmount, colors ,user_id, ThemeColor(0,"No colors choosen", "")))
           }
         }
         case false => Future(Redirect("/login?err_no=2"))
@@ -76,7 +82,24 @@ class UserConfigController @Inject()(
   }
 
   def change_color(user_id: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    Future { Ok ( "Jakiś string")}
+    val colorData: Form[SingleAmount] = UserConfigForms.singleAmount.bindFromRequest()
+    val ret = routes.UserConfigController.config_page(user_id).url
+    val addition = if (colorData.hasErrors) {
+      Future {
+        "&err_code=1&err_msg="
+      }
+    }
+    else {
+      if (user_id.isEmpty) {
+        Future {
+          "&err_code=1&err_msg="
+        }
+      }
+      val color = colorData.get.amount.toInt
+      userConfigDao.changeColor(user_id.get.toInt, color).map(x =>
+        s"&success=${x.toInt}")
+    }
+    addition.map(x => Redirect(ret + x))
   }
 
 }

@@ -1,5 +1,5 @@
 @import play.api.data.Form
-@(budgetForm: Form[SingleAmount],colors: Seq[ThemeColor], user_id: Option[String])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@(budgetForm: Form[SingleAmount], colorForm: Form[SingleAmount], colors: Seq[ThemeColor], user_id: Option[String], userColor: ThemeColor)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 @*, incomeForm: Form[IncomeForm])*@
 
 <!DOCTYPE html>
@@ -19,7 +19,7 @@
                 <button class="login-button change-button" data-micromodal-trigger="modal-1">Change</button>
             </div>
             <div class="flex-row">
-                <p><b>User theme: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> Orange</p>
+                <p><b>User theme: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> @{userColor.name}</p>
                 <button class="login-button change-button" data-micromodal-trigger="modal-2">Change</button>
             </div>
         </div>
@@ -63,8 +63,9 @@
                     @helper.form(action = routes.UserConfigController.change_color(None)){
                         @helper.CSRF.formField
                         <p>Choose your color</p>
+                        @helper.inputText(colorForm("amount"), Array("class" -> "modal__text hidden", "id" -> "amount", "name" -> "amount", "type" -> "hidden").map(x => {Symbol(x._1) -> x._2}) :  _*)
                         @for(i <- colors){
-                            <button class="modal__btn color__btn width_default">@i.name</button>
+                            <button class="modal__btn color__btn width_default submitter" value="@i.id">@i.name</button>
                         }
                     }
                 </main>

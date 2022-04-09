@@ -52,7 +52,7 @@ class UserConfigDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfi
   // pobierz kolor który ma dany użytkownik
   def getUsersColor(user_id: Int): Future[Option[ThemeColor]] = db.run {
     sql"""
-        select c.col_id, c.name, c.col_filename
+        select c.col_id, c.col_name, c.col_filename
         from public.user
         inner join colors c on c.col_id = "user".col_id
         where u_id = $user_id;
