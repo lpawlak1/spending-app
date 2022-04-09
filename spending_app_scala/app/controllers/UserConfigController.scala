@@ -34,13 +34,18 @@ class UserConfigController @Inject()(
     )
   }
 
+
+
   def config_page(user_id: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
         case true => {
-          userConfigDao.getCurrentActiveBudget(user_id.get.toInt).map {
-            case Some(budget) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)), user_id))
-            case None => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)), user_id))
+          val budget =  userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
+          val colors = userConfigDao.getAllColors
+          budget.zip(colors).map
+         {
+            case (Some(budget), colors)=> Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)), colors ,  user_id))
+            case (_,colors) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)), colors ,user_id))
           }
         }
         case false => Future(Redirect("/login?err_no=2"))
@@ -68,6 +73,10 @@ class UserConfigController @Inject()(
         s"&success=${x.toInt}")
     }
     addition.map(x => Redirect(ret + x))
+  }
+
+  def change_color(user_id: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    Future { Ok ( "Jakiś string")}
   }
 
 }

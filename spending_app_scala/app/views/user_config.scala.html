@@ -1,5 +1,5 @@
 @import play.api.data.Form
-@(budgetForm: Form[SingleAmount], user_id: Option[String])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@(budgetForm: Form[SingleAmount],colors: Seq[ThemeColor], user_id: Option[String])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 @*, incomeForm: Form[IncomeForm])*@
 
 <!DOCTYPE html>
@@ -60,9 +60,12 @@
                     <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
                 </header>
                 <main class="modal__content" id="modal-2-content" id="budget-form-wrapper">
-                    <input style="display: none;" type="text">
-                    @for(i <- List("różowy", "szary", "Orange")){
-                        <button class="modal__btn color__btn width_default">@i</button>
+                    @helper.form(action = routes.UserConfigController.change_color(None)){
+                        @helper.CSRF.formField
+                        <p>Choose your color</p>
+                        @for(i <- colors){
+                            <button class="modal__btn color__btn width_default">@i.name</button>
+                        }
                     }
                 </main>
             </div>
