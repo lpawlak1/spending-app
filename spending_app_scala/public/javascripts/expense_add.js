@@ -13,11 +13,10 @@ $(function() {
     // budget_form
     let budget_form = $("form");
     budget_form.attr("action", budget_form.attr("action") + params);
+    const dateForDateTimeInputValue = date => new Date(date.getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19);
 
     let datetime_picker = budget_form.find("input[name='datetime-local']");
-    console.log(new Date().toISOString().slice(0,-1));
-    datetime_picker.attr("value", new Date().toISOString().slice(0, -1));
-    console.log(datetime_picker.attr("value"));
+    datetime_picker.value = (dateForDateTimeInputValue(new Date()));
 
 
     const error_code = urlParams.get('err_code');
