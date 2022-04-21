@@ -1,6 +1,7 @@
 package daos
 
 import models._
+import daos._
 import play.api.db.slick._
 import slick.jdbc.JdbcProfile
 import slick.lifted.ProvenShape
@@ -12,13 +13,14 @@ import scala.concurrent.Future
 trait ExpenseDao {
   def findAll: Future[Seq[Expense]]
 
+  def findDeleted(del: Boolean): Future[Seq[(Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
+
   def findExpenseCategory(ex_id: Int): Future[Int]
 
   def findExpenseSubCategories(expense_id: Int): Future[Int]
 
-  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Int]
-
-  def findDeleted(del: Boolean): Future[Seq[Expense]]
+  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
+    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
 
   def insert(ex: Expense): Future[Int]
 }
@@ -35,7 +37,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
     def expense_name = column[Option[String]]("ex_name")
 
-    def category_id = column[Int]("cat_id")
+    def category_id = column[Option[Int]]("cat_id")
 
     def user_id = column[Int]("u_id")
 
@@ -57,12 +59,19 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
       ).mapTo[models.Expense]
   }
 
-  private val table = TableQuery[ExpenseTable]
+  private val expenses_table = TableQuery[ExpenseTable]
 
-  def findAll: Future[Seq[Expense]] = db.run(table.result)
+  def findAll: Future[Seq[Expense]] = db.run(expenses_table.result)
 
-  def findDeleted(del: Boolean): Future[Seq[Expense]] = db.run(table.filter(_.deleted === del).result)
+  // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
+  def findDeleted(del: Boolean): Future[Seq[(Option[String], LocalDateTime, Option[Int], Double, Option[String])]] = {
+    val query = expenses_table.filter(_.deleted === del).map(ex => (ex.expense_name,
+      ex.purchase_date, ex.category_id, ex.price, ex.desc))
 
+    db.run(query.result)
+  }
+
+  // Working version of findExpenseCategory. Uses plain sql query.
   def findExpenseCategory(ex_id: Int): Future[Int] = db.run {
     sqlu"""
           select E.Ex_Name,
@@ -76,6 +85,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         """
   }
 
+  // Working version of findExpenseSubCategories. Uses plain sql query.
   def findExpenseSubCategories(ex_id: Int): Future[Int] = db.run {
     sqlu"""
           select E.Ex_Name,
@@ -90,26 +100,18 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         """
   }
 
-  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Int] = db.run {
-    sqlu"""
-          select E.Ex_Name,
-                 E.DateOfPurchase,
-                 C.Cat_Name,
-                 E.Price,
-                 E.Description
-          from Expense E
-              join Category C on E.Cat_ID = C.Cat_ID
-          where E.DateOfPurchase between ${start_date} and ${end_date}
-        """
+  // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
+  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
+    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]] = {
+    val query = expenses_table.filter(
+      ex => (ex.purchase_date >= start_date) && (ex.purchase_date <= end_date)
+    ).map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
+
+    db.run(query.result)
   }
 
-  def insert(ex: Expense): Future[Int] = db.run {
-    sqlu"""
-          insert into expense (Ex_ID, Ex_Name, Cat_ID, U_ID, AddedDateTime, LastModificationDateTime,
-                               DateOfPurchase, Description, Price, Deleted)
-                               values (${ex.expense_id}, ${ex.expense_name}, ${ex.category_id},
-                                       ${ex.user_id}, ${ex.added_date}, ${ex.last_mod_date},
-                                       ${ex.purchase_date}, ${ex.desc}, ${ex.price}, ${ex.deleted})
-        """
+  def insert(ex: Expense): Future[Int] = {
+    val insert = expenses_table += ex
+    db.run(insert)
   }
 }

@@ -1,5 +1,6 @@
 package models
 
+import java.sql.Types
 import java.time.LocalDateTime
 
 case class Expense(expense_id: Int, expense_name: Option[String], category_id: Option[Int], user_id: Int,
