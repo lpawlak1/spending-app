@@ -3,26 +3,27 @@ package daos
 import models._
 import daos._
 import play.api.db.slick._
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{GetResult, JdbcProfile}
 import slick.lifted.ProvenShape
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.Future
 
 trait ExpenseDao {
   def findAll: Future[Seq[Expense]]
 
-  def findDeleted(del: Boolean): Future[Seq[(Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
-
   def findExpenseCategory(ex_id: Int): Future[Int]
 
   def findExpenseSubCategories(expense_id: Int): Future[Int]
 
-  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
-    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
+//  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
+//    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
 
   def insert(ex: Expense): Future[Int]
+
+  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[LocalDateTime] = None, end_date: Option[LocalDateTime] = None, del: Boolean = false): Future[Seq[Expense]]
 }
 
 class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -35,9 +36,9 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     extends Table[models.Expense](tag, Some("public"), "expense") {
     def expense_id = column[Int]("ex_id")
 
-    def expense_name = column[Option[String]]("ex_name")
+    def expense_name = column[String]("ex_name")
 
-    def category_id = column[Option[Int]]("cat_id")
+    def category_id = column[Int]("cat_id")
 
     def user_id = column[Int]("u_id")
 
@@ -47,7 +48,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
     def purchase_date = column[LocalDateTime]("dateofpurchase")
 
-    def desc = column[Option[String]]("decription")
+    def desc = column[Option[String]]("description")
 
     def price = column[Double]("price")
 
@@ -64,14 +65,15 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   def findAll: Future[Seq[Expense]] = db.run(expenses_table.result)
 
   // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
-  def findDeleted(del: Boolean): Future[Seq[(Option[String], LocalDateTime, Option[Int], Double, Option[String])]] = {
-    val query = expenses_table.filter(_.deleted === del).map(ex => (ex.expense_name,
-      ex.purchase_date, ex.category_id, ex.price, ex.desc))
+  def findDeleted(del: Boolean): Future[Seq[(String, LocalDateTime, Int, Double, Option[String])]] = {
+    val query = expenses_table.filter(_.deleted === del)
+      .map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
 
     db.run(query.result)
   }
 
   // Working version of findExpenseCategory. Uses plain sql query.
+  // To nie jest Future[Int]
   def findExpenseCategory(ex_id: Int): Future[Int] = db.run {
     sqlu"""
           select E.Ex_Name,
@@ -86,6 +88,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 
   // Working version of findExpenseSubCategories. Uses plain sql query.
+  // TODO To nie jest future[Int] na pewno
   def findExpenseSubCategories(ex_id: Int): Future[Int] = db.run {
     sqlu"""
           select E.Ex_Name,
@@ -101,17 +104,27 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 
   // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
-  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
-    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]] = {
-    val query = expenses_table.filter(
-      ex => (ex.purchase_date >= start_date) && (ex.purchase_date <= end_date)
-    ).map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
-
-    db.run(query.result)
-  }
+//  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
+//    (String, LocalDateTime, Int, Double, Option[String])]] = {
+//    val query = expenses_table.filter(
+//      ex => (ex.purchase_date >= start_date) && (ex.purchase_date <= end_date)
+//    ).map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
+//
+//    db.run(query.result)
+//  }
 
   def insert(ex: Expense): Future[Int] = {
     val insert = expenses_table += ex
     db.run(insert)
+  }
+
+  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[LocalDateTime] = None, end_date: Option[LocalDateTime] = None, del: Boolean = false): Future[Seq[Expense]] = db.run {
+    expenses_table
+      .filter(_.user_id === u_id)
+      .filterOpt(category_id)(_.category_id === _)
+      .filterOpt(start_date)(_.purchase_date >= _)
+      .filterOpt(end_date)(_.purchase_date <= _)
+      .filterIf(!del)(ex => ex.deleted === false)
+      .result
   }
 }

@@ -152,7 +152,7 @@ $body$ language plpgsql;
 
 create table Expense(
     Ex_ID serial primary key,
-    Ex_name varchar,
+    Ex_name varchar not null,
     Cat_ID int not null,
     U_ID int not null,
     AddedDateTime timestamp not null default now(),
