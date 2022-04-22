@@ -4,7 +4,7 @@ package controllers
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import daos.UserConfigDao
+import daos.{ExpenseDao, UserConfigDao}
 import play.api.mvc._
 import services.UserAuthorizationActor.UserAuthorization
 
@@ -22,6 +22,7 @@ import scala.language.postfixOps
 class HomeController @Inject()(
                                 userDao: daos.UserDao,
                                 userConfigDao: UserConfigDao,
+                                expenseDao: ExpenseDao,
                                 cc: ControllerComponents,
                                 @Named("user-authorization-actor") userAuthorizationActor: ActorRef
   )(implicit ec: ExecutionContext) extends AbstractController(cc) {
@@ -49,6 +50,14 @@ class HomeController @Inject()(
         }
         case false => Future(Redirect(LoginUtils.LOGIN_ERROR_LINK))
       }.flatten
+    }
+  }
+
+  def index_test(): Action[AnyContent] = Action.async {
+    implicit request => {
+      expenseDao.findWithFilters(1).map(ex => {
+        Ok(ex.toString)
+      })
     }
   }
 }
