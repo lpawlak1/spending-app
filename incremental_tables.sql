@@ -271,4 +271,8 @@ begin
 end;
 $$ language plpgsql;
 
+-- 27.04 
+update public.User
+set col_id = (select col_id from public.colors where col_name='Pink');
+
 
