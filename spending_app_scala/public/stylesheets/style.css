@@ -4,8 +4,7 @@
 /*}*/
 body {
     font-family: 'Outfit', sans-serif;
-    #background-color: #FFBA5B;
-    background: -webkit-gradient(linear, left top, left bottom, from(#FFBA5B), to(#ffe4c3)) fixed;
+    background: -webkit-gradient(linear, left top, left bottom, from(var(--gradient-1)), to(var(--gradient-2))) fixed;
 }
 
 .nav-wrapper {
@@ -156,7 +155,7 @@ button{
 }
 
 button:hover {
-    background-color: #ff9100;
+    background-color: var(--primary-color);
     color: #ffffff;
 }
 
@@ -209,7 +208,7 @@ button:hover {
 
 .login-button{
     border: 1px solid #757575;
-    background-color: #ff9100;
+    background-color: var(--primary-color);
     color: #ffffff;
     padding: 10px;
     /* font-size: 14px; */
