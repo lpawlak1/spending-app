@@ -13,7 +13,7 @@ import services.UserAuthorizationActor.UserAuthorization
 
 import javax.inject._
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
 
 case class SingleAmount(amount: BigDecimal)
@@ -39,20 +39,18 @@ class UserConfigController @Inject()(
     implicit request => {
       (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
         case true => {
-          val budget =  userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
+          val budgetF =  userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
+          val userColorF = userConfigDao.getUsersColor(user_id.get.toInt)
+          val colorsF = userConfigDao.getAllColors
 
-          val userColor = userConfigDao.getUsersColor(user_id.get.toInt)
-          val colors = userConfigDao.getAllColors
+          val budget: Double = Await.result(budgetF, 2.seconds).getOrElse(0)
+          val userColor = Await.result(userColorF, 1.seconds).getOrElse(ThemeColor.default)
+          val colors = Await.result(colorsF, 1.seconds)
 
-          userColor.zip(colors).zip(budget).map {
-            case ((Some(userColor), colors), Some(budget)) => {
-              Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)),UserConfigForms.singleAmount, colors, user_id, userColor))
-            }
-            case ((_,colors),_) => Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(0)),UserConfigForms.singleAmount, colors ,user_id, ThemeColor(0,"No colors choosen", "")))
-          }
+          Ok(views.html.user_config(UserConfigForms.singleAmount.fill(SingleAmount(budget)),UserConfigForms.singleAmount, colors, user_id, userColor))
         }
-        case false => Future(Redirect("/login?err_no=2"))
-      }.flatten
+        case false => Redirect("/login?err_no=2")
+      }
     }
   }
 

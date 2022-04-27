@@ -5,7 +5,9 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import daos.{ExpenseDao, UserConfigDao}
+import models.ThemeColor
 import play.api.mvc._
+import services.TuplesUnpack
 import services.UserAuthorizationActor.UserAuthorization
 
 import java.time.{Duration, LocalDateTime}
@@ -13,6 +15,7 @@ import javax.inject._
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
+import scala.math.Fractional.Implicits.infixFractionalOps
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -36,28 +39,21 @@ class HomeController @Inject()(
 
           val budgetFuture = userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
           val usernameFuture = userDao.findOnesUsername(user_id.get.toInt)
+          val themeColorFuture = userConfigDao.getUsersColor(user_id.get.toInt)
 
-          val res = budgetFuture.zip(usernameFuture)
-          res.map {
-            case (Some(budget), Some(username)) =>
-              Ok(views.html.index(LocalDateTime.now(), (budget, user_id.get.toInt), username))
-            case (_, Some(username)) =>
-              Ok(username + " has no active budget")
-            case (_,_) =>
-              Redirect(LoginUtils.LOGIN_ERROR_LINK)
-          }
+          val budget = Await.result(budgetFuture, 2.seconds)
+          val retBudget: Double = budget.getOrElse(0)
 
+          val username = Await.result(usernameFuture, 1.seconds)
+          val retUsername = username.getOrElse("No username :(")
+
+          val themeColor = Await.result(themeColorFuture, 1.seconds)
+          val retThemeColor = themeColor.getOrElse(ThemeColor.default)
+
+          Ok(views.html.index(LocalDateTime.now(), (retBudget, user_id.get.toInt), retUsername, retThemeColor))
         }
-        case false => Future(Redirect(LoginUtils.LOGIN_ERROR_LINK))
-      }.flatten
-    }
-  }
-
-  def index_test(): Action[AnyContent] = Action.async {
-    implicit request => {
-      expenseDao.findWithFilters(1).map(ex => {
-        Ok(ex.toString)
-      })
+        case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
+      }
     }
   }
 }
