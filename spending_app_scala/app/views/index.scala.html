@@ -4,11 +4,14 @@
  *@
 @import java.time.LocalDateTime
 @import java.time.format.DateTimeFormatter
-@(data: LocalDateTime, limits: Tuple2[Double,Double], userName: String)
+@(data: LocalDateTime, limits: Tuple2[Double,Double], userName: String, user_color: ThemeColor)
 
 <!DOCTYPE html>
 <html lang="en">
-    @head(List(routes.Assets.versioned("stylesheets/style.css")), List(routes.Assets.versioned("javascripts/jquery-3.6.0.min.js"), routes.Assets.versioned("javascripts/Toast.min.js"),routes.Assets.versioned("javascripts/index.js")), "Main page"){ }
+    @head(
+        List(routes.Assets.versioned("stylesheets/style.css")),
+        List(routes.Assets.versioned("javascripts/jquery-3.6.0.min.js"), routes.Assets.versioned("javascripts/Toast.min.js"),routes.Assets.versioned("javascripts/index.js")),
+        "Main page")(user_color){ }
     <body>
 
         <div class="nav-wrapper">

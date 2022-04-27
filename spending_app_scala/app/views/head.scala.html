@@ -3,7 +3,7 @@
 ** js is the same as styles for javascript files
 **@
 @import slick.ast.Union
-@(styles: Iterable[Call], js: Iterable[Call], title: String)(content: Html)
+@(styles: Iterable[Call], js: Iterable[Call], title: String)(user_Color: ThemeColor)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +17,8 @@
     @for(x <- js) {
         <script src="@x" defer></script>
     }
+
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/" + user_Color.filename)">
 
     @* the link below should be default for all pages*@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/style.css") ">

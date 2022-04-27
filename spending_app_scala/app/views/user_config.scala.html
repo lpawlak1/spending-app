@@ -1,11 +1,11 @@
 @import play.api.data.Form
 @(budgetForm: Form[SingleAmount], colorForm: Form[SingleAmount], colors: Seq[ThemeColor], user_id: Option[String], userColor: ThemeColor)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
-@*, incomeForm: Form[IncomeForm])*@
 
 <!DOCTYPE html>
 <html lang="pl">
     @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
-          List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "user_config").map(x => routes.Assets.versioned(s"javascripts/${x}.js")), "User Configuration"){ }
+          List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "user_config").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
+          "User Configuration")(userColor){ }
 <body>
 
     <div class="powrot-strzaleczka">
