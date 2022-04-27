@@ -10,6 +10,9 @@ GET     /                           controllers.HomeController.index(user_id: Op
 
 #GET     /test                       controllers.HomeController.index_test(user_id: Int)
 
+#protected expense history (table) controller
+GET     /history/table              controllers.ExpenseHistoryController.table(user_id: Option[String])
+
 #protected userconfig controller
 GET    /userconfig                  controllers.UserConfigController.config_page(user_id: Option[String])
 

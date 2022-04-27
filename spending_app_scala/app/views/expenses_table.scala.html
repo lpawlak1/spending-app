@@ -1,0 +1,28 @@
+@()(themeColor: ThemeColor)
+
+
+<!doctype html>
+<html lang="en">
+        @head(List("Toast.min", "style").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
+              List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "table_history").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
+              "Expenses history")(themeColor){ }
+        <body>
+
+        <div class="powrot-strzaleczka">
+            <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
+        </div>
+
+        <div class="flex-horizontal">
+            <div id="dropdown-1" class="dropdown">
+                <button class="dropbtn">Tutaj coś</button>
+                <div class="dropdown-content">
+                    <a>link 1</a>
+                    <a>link 2</a>
+                    <a>link 3</a>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+</html>
