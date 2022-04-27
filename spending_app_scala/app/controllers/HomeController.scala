@@ -7,7 +7,6 @@ import akka.util.Timeout
 import daos.{ExpenseDao, UserConfigDao}
 import models.ThemeColor
 import play.api.mvc._
-import services.TuplesUnpack
 import services.UserAuthorizationActor.UserAuthorization
 
 import java.time.{Duration, LocalDateTime}
