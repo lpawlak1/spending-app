@@ -3,11 +3,11 @@ package daos
 import models._
 import daos._
 import play.api.db.slick._
+import services.DateTimeFormatter
 import slick.jdbc.{GetResult, JdbcProfile}
 import slick.lifted.ProvenShape
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.Future
 
@@ -23,7 +23,9 @@ trait ExpenseDao {
 
   def insert(ex: Expense): Future[Int]
 
-  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[LocalDateTime] = None, end_date: Option[LocalDateTime] = None, del: Boolean = false): Future[Seq[Expense]]
+  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[Expense]]
+
+  def setDeleted(ex_id: Int, del: Boolean): Future[Int]
 }
 
 class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -118,12 +120,17 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(insert)
   }
 
-  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[LocalDateTime] = None, end_date: Option[LocalDateTime] = None, del: Boolean = false): Future[Seq[Expense]] = db.run {
+  def setDeleted(ex_id: Int, del: Boolean): Future[Int] = {
+    val query = expenses_table.filter(_.expense_id === ex_id).map(_.deleted).update(del)
+    db.run(query)
+  }
+
+  def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[Expense]] = db.run {
     expenses_table
       .filter(_.user_id === u_id)
       .filterOpt(category_id)(_.category_id === _)
-      .filterOpt(start_date)(_.purchase_date >= _)
-      .filterOpt(end_date)(_.purchase_date <= _)
+      .filterOpt(start_date)(_.purchase_date >= DateTimeFormatter.getDateFromString(_))
+      .filterOpt(end_date)(_.purchase_date <= DateTimeFormatter.getDateFromString(_))
       .filterIf(!del)(ex => ex.deleted === false)
       .result
   }

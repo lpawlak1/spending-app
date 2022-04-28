@@ -356,3 +356,34 @@ main .color__btn {
 .dropdown:hover .dropdown-content {display: block;}
 
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.table__history{
+    width: 90%;
+    margin-inline: auto;
+}
+.table__history {
+    font-size: 20px;
+}
+.table__date{
+    text-align: center;
+}
+.table__description{}
+.table__name{}
+.table__price{}
+
+.table__remove{
+    width: 60px;
+}
+
+.red_mark {
+    color: red;
+}
+.green_mark {
+    color: green;
+}
+
+input[name=basic]{
+    width: 225px;
+    font-size: 20px;
+    padding: 0;
+}
