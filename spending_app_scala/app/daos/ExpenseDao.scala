@@ -33,7 +33,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   import dbConfig.profile.api._
 
   private class ExpenseTable(tag: Tag)
-    extends Table[models.Expense](tag, Some("public"), "expense") {
+    extends Table[models.Expense](tag, Some("public"), "test1") {
     def expense_id = column[Int]("ex_id")
 
     def expense_name = column[String]("ex_name")

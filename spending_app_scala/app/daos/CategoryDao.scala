@@ -16,6 +16,7 @@ class CategoryDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigP
 
   private class CategoryTable(tag: Tag)
     extends Table[models.Category](tag, Some("public"), "category") {
+
     def cat_id = column[Int]("cat_id")
 
     def cat_name = column[String]("cat_name")
@@ -25,15 +26,17 @@ class CategoryDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigP
     def * : ProvenShape[Category] = (cat_id, cat_name, parent_id).mapTo[models.Category]
   }
 
-  private val table = TableQuery[CategoryTable]
+  private val category_table = TableQuery[CategoryTable]
 
-  def findAll: Future[Seq[Category]] = db.run(table.result)
+  def findAll: Future[Seq[Category]] = db.run(category_table.result)
 
-  def findTopLevelCategories: Future[Seq[Category]] = db.run(table.filter(_.parent_id.isEmpty).result)
+  def findTopLevelCategories: Future[Seq[Category]] = db.run(category_table.filter(_.parent_id.isEmpty).result)
 
-  def findSubCategories(parentId: Int): Future[Seq[Category]] = db.run(table.filter(_.parent_id === parentId).result)
+  def findSubCategories(parentId: Int): Future[Seq[Category]] = db.run(category_table.filter(_.parent_id === parentId).result)
 
 }
+
+
 
 trait CategoryDao {
   def findAll: Future[Seq[Category]]
