@@ -54,9 +54,11 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
     def deleted = column[Boolean]("deleted")
 
+    def category_name = column[String]("cat_name")
+
     def * : ProvenShape[Expense] = (
       expense_id, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
-      desc, price, deleted
+      desc, price, deleted, category_name
       ).mapTo[models.Expense]
   }
 
