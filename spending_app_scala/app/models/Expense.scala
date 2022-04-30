@@ -11,4 +11,7 @@ case class Expense(expense_id: Int, expense_name: String, category_id: Int, user
     )): Expense = {
     (Expense.apply _).tupled(tuple)
   }
+
+  def toMap() =  {
+  }
 }

@@ -1,0 +1,60 @@
+@import services.DateTimeFormatter
+@import views.html.helper.form
+@import play.filters.csrf.CSRF
+@import views.html.helper.CSRF
+@import views.html.helper.form
+@(expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
+
+
+<!doctype html>
+<html lang="en">
+    @head(List("Toast.min",
+               "daterangepicker",
+               "style").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
+        List("jquery-3.6.0.min",
+            "Toast.min",
+            "micromodal.min",
+            "moment.min",
+            "daterangepicker",
+            "table_history").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
+        "Expenses history")(themeColor){ }
+    <body>
+
+        <form id="CSRF">
+            @helper.CSRF.formField
+        </form>
+
+        <div class="powrot-strzaleczka">
+            <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
+        </div>
+
+        <div>
+            <label style="display: block;" for="datepicker">Choose start and end date</label>
+            <input type="text" name="basic" id="datepicker" value="01/01/2022 - 07/27/2022">
+        </div>
+
+        <table class="table__history element-blue">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(expense <- expenses){
+                    <tr class="inside-tr">
+                        <td class="hidden">@expense.expense_id</td>
+                        <td class="table__name">@expense.expense_name</td>
+                        <td class="table__date">@{DateTimeFormatter.getDateTime(expense.purchase_date)}</td>
+                        <td class="table__price">@expense.price</td>
+                        <td class="table__description">@expense.desc</td>
+                        <td class="table__remove"><button ><i class="fa-solid fa-xmark red_mark"></i></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </body>
+</html>

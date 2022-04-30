@@ -10,6 +10,13 @@ GET     /                           controllers.HomeController.index(user_id: Op
 
 #GET     /test                       controllers.HomeController.index_test(user_id: Int)
 
+#protected expense history (table) controller
+GET     /history/table              controllers.ExpenseHistoryController.table(user_id: Option[String])
+GET     /history/get_row            controllers.ExpenseHistoryController.getRows(user_id: Option[String], category_id: Option[Int], start_date: Option[String], end_date: Option[String], del: Option[Boolean])
+
+DELETE  /expense/:id               controllers.ExpenseHistoryController.delete(id: Int, del: Option[Boolean])
+PUT     /expense/:id               controllers.ExpenseHistoryController.delete(id: Int, del: Option[Boolean])
+
 #protected userconfig controller
 GET    /userconfig                  controllers.UserConfigController.config_page(user_id: Option[String])
 
