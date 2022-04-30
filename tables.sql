@@ -188,3 +188,13 @@ begin
     return(ret_value);
 end;
 $$ language plpgsql;
+
+create or replace view public.test1 as
+select  
+    e.*,
+    (
+        select c.cat_name 
+        from public.category c 
+        where c.cat_id = e.cat_id
+    )
+from Expense e;

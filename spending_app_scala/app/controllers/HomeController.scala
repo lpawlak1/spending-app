@@ -33,29 +33,26 @@ class HomeController @Inject()(
 
   def index(user_id: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
-      expenseDao.findWithFilters(1).map {t =>
-        Ok(t.toString)
-      }
-//      (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
-//        case true => {
-//
-//          val budgetFuture = userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
-//          val usernameFuture = userDao.findOnesUsername(user_id.get.toInt)
-//          val themeColorFuture = userConfigDao.getUsersColor(user_id.get.toInt)
-//
-//          val budget = Await.result(budgetFuture, 2.seconds)
-//          val retBudget: Double = budget.getOrElse(0)
-//
-//          val username = Await.result(usernameFuture, 1.seconds)
-//          val retUsername = username.getOrElse("No username :(")
-//
-//          val themeColor = Await.result(themeColorFuture, 1.seconds)
-//          val retThemeColor = themeColor.getOrElse(ThemeColor.default)
-//
-//          Ok(views.html.index(LocalDateTime.now(), (retBudget, user_id.get.toInt), retUsername, retThemeColor))
-//        }
-//        case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
-//      }
+     (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
+       case true => {
+
+         val budgetFuture = userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
+         val usernameFuture = userDao.findOnesUsername(user_id.get.toInt)
+         val themeColorFuture = userConfigDao.getUsersColor(user_id.get.toInt)
+
+         val budget = Await.result(budgetFuture, 2.seconds)
+         val retBudget: Double = budget.getOrElse(0)
+
+         val username = Await.result(usernameFuture, 1.seconds)
+         val retUsername = username.getOrElse("No username :(")
+
+         val themeColor = Await.result(themeColorFuture, 1.seconds)
+         val retThemeColor = themeColor.getOrElse(ThemeColor.default)
+
+         Ok(views.html.index(LocalDateTime.now(), (retBudget, user_id.get.toInt), retUsername, retThemeColor))
+       }
+       case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
+     }
     }
   }
 }

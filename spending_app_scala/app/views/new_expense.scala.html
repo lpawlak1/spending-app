@@ -3,7 +3,8 @@
 <!doctype html>
 <html lang="pl">
     @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
-        List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "expense_add").map(x => routes.Assets.versioned(s"javascripts/${x}.js")), "Add expense"){ }
+        List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "expense_add").map(x => routes.Assets.versioned(s"javascripts/${x}.js")), 
+        "Add expense")(ThemeColor.default){ }
 <body>
         <div class="powrot-strzaleczka">
             <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
