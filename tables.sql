@@ -85,7 +85,6 @@ insert into Category(Cat_Name) VALUES ('Food');
 insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Drinks', (select Cat_ID from Category where cat_name = 'Food'));
 
 
--- call insert_budget(1, cast (1500.00 as money));
 create or replace procedure insert_budget(u_id int, new_budget money)
 language plpgsql
 as $$
@@ -113,6 +112,7 @@ as $$
                );
     END;
 $$;
+call insert_budget(1, cast (1500.00 as money));
 
 drop function if exists public.get_all_months_between;
 create or replace function public.get_all_months_between(start_date timestamp, end_date timestamp) returns table(month text,year text) as
