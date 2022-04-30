@@ -14,13 +14,6 @@ import scala.concurrent.Future
 trait ExpenseDao {
   def findAll: Future[Seq[Expense]]
 
-  def findExpenseCategory(ex_id: Int): Future[Int]
-
-  def findExpenseSubCategories(expense_id: Int): Future[Int]
-
-//  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
-//    (Option[String], LocalDateTime, Option[Int], Double, Option[String])]]
-
   def insert(ex: Expense): Future[Int]
 
   def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[Expense]]
@@ -65,55 +58,6 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   private val expenses_table = TableQuery[ExpenseTable]
 
   def findAll: Future[Seq[Expense]] = db.run(expenses_table.result)
-
-  // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
-  def findDeleted(del: Boolean): Future[Seq[(String, LocalDateTime, Int, Double, Option[String])]] = {
-    val query = expenses_table.filter(_.deleted === del)
-      .map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
-
-    db.run(query.result)
-  }
-
-  // Working version of findExpenseCategory. Uses plain sql query.
-  // To nie jest Future[Int]
-  def findExpenseCategory(ex_id: Int): Future[Int] = db.run {
-    sqlu"""
-          select E.Ex_Name,
-                 E.DateOfPurchase,
-                 C.Cat_Name,
-                 E.Price,
-                 E.Description
-          from Expense E
-              join Category C on E.Cat_ID = C.Cat_ID
-          where E.Ex_ID = ${ex_id}
-        """
-  }
-
-  // Working version of findExpenseSubCategories. Uses plain sql query.
-  // TODO To nie jest future[Int] na pewno
-  def findExpenseSubCategories(ex_id: Int): Future[Int] = db.run {
-    sqlu"""
-          select E.Ex_Name,
-                 E.DateOfPurchase,
-                 C.Cat_Name,
-                 E.Price,
-                 E.Description
-          from Expense E
-              join Category C on E.Cat_ID = C.Cat_ID
-          where C.Cat_Superior_Cat_Id  = E.Cat_ID
-            and E.Ex_ID = ${ex_id}
-        """
-  }
-
-  // Lists contents in format: Ex_Name, DateOfPurchase, Cat_ID, Price, Description
-//  def findExpensesByPurchaseDate(start_date: LocalDateTime, end_date: LocalDateTime): Future[Seq[
-//    (String, LocalDateTime, Int, Double, Option[String])]] = {
-//    val query = expenses_table.filter(
-//      ex => (ex.purchase_date >= start_date) && (ex.purchase_date <= end_date)
-//    ).map(ex => (ex.expense_name, ex.purchase_date, ex.category_id, ex.price, ex.desc))
-//
-//    db.run(query.result)
-//  }
 
   def insert(ex: Expense): Future[Int] = {
     val insert = expenses_table += ex
