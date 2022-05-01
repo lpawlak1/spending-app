@@ -18,12 +18,14 @@
                     @*                "category" -> number,*@
                     <div class="categories-wrapper">
                     @for((x,y) <- categoriesList){
-                        <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
-                        <label for="@{x.name}"><b>@{x.name}</b></label>
+                        <div>
+                            <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
+                            <label for="@{x.name}"><b>@{x.name}</b></label>
+                        </div>
                         <div class="sub-categories">
                         @for(z <- y){
                             <div>
-                                <input type="radio" name="category" id="@{z.name}" value="@{x.id}">
+                                <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
                                 <label for="@{z.name}">@{z.name}</label>
                             </div>
                         }

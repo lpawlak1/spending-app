@@ -189,6 +189,25 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function public.get_current_users_expenses_sum(u_id int) returns money as $$
+declare
+    ret_value money;
+begin
+    select coalesce(sum(price), 0::money) as sum_price
+    into ret_value
+    from expense e
+    where e.u_id = $1
+      and e.deleted = false
+      and e.dateofpurchase
+          between date_trunc('month', now())
+          and date_trunc('month', now() + 1 * INTERVAL '1 Month');
+
+    return(ret_value);
+end;
+$$ language plpgsql;
+
+-- test features below
+
 create or replace view public.test1 as
 select  
     e.*,
@@ -198,3 +217,7 @@ select
         where c.cat_id = e.cat_id
     )
 from Expense e;
+
+
+insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted) values ('1',3,1,123,'0');
+insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted) values ('2',2,1,123,'0');

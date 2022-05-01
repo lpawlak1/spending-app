@@ -1,6 +1,8 @@
 let start_;
 let end_;
 let id;
+let seeDeleted_ = false;
+let cat_id_ = -1;
 
 function table_button_click(method) {
     return function() {
@@ -30,7 +32,7 @@ function table_button_click(method) {
 }
 
 function reload() {
-    $.getJSON(`/history/get_row?user_id=${id}&start_date=${start_.format('DD.MM.YYYY')}&end_date=${end_.format('DD.MM.YYYY')}&del=true`, (res => {
+    $.getJSON(`/history/get_row?user_id=${id}&start_date=${start_.format('DD.MM.YYYY')}&end_date=${end_.format('DD.MM.YYYY')}&del=${seeDeleted_.toString()}&category_id=${cat_id_}`, (res => {
         $('tr.inside-tr').remove();
         for (const expense of res) {
             let button;
@@ -97,6 +99,16 @@ $(function(){
     });
     start_ = moment().startOf('month')
     end_ = moment().endOf('month')
+
+    $("#showDeleted").change(function() {
+        seeDeleted_ = $("#showDeleted").is(':checked');
+        reload();
+    });
+
+    $("input[name=category]").change(function() {
+        cat_id_ = $(this).val();
+        reload();
+    });
 
     reload();
 });

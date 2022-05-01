@@ -39,6 +39,7 @@ class HomeController @Inject()(
          val budgetFuture = userConfigDao.getCurrentActiveBudget(user_id.get.toInt)
          val usernameFuture = userDao.findOnesUsername(user_id.get.toInt)
          val themeColorFuture = userConfigDao.getUsersColor(user_id.get.toInt)
+         val expensesFuture = expenseDao.getExpensesSum(user_id.get.toInt)
 
          val budget = Await.result(budgetFuture, 2.seconds)
          val retBudget: Double = budget.getOrElse(0)
@@ -49,7 +50,9 @@ class HomeController @Inject()(
          val themeColor = Await.result(themeColorFuture, 1.seconds)
          val retThemeColor = themeColor.getOrElse(ThemeColor.default)
 
-         Ok(views.html.index(LocalDateTime.now(), (retBudget, user_id.get.toInt), retUsername, retThemeColor))
+         val retExpensesSum = Await.result(expensesFuture, 1.seconds)
+
+         Ok(views.html.index(LocalDateTime.now(), (retBudget, retExpensesSum), retUsername, retThemeColor))
        }
        case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
      }

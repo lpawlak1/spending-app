@@ -3,7 +3,7 @@
 @import play.filters.csrf.CSRF
 @import views.html.helper.CSRF
 @import views.html.helper.form
-@(expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
+@(categories: List[(Category, Seq[Category])], expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
 
 
 <!doctype html>
@@ -28,22 +28,54 @@
             <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
         </div>
 
-        <div>
-            <label style="display: block;" for="datepicker">Choose start and end date</label>
-            <input type="text" name="basic" id="datepicker" value="01/01/2022 - 07/27/2022">
-        </div>
+        <div class="ex-hist-wrapper">
+            <div class="horizontal-filters">
+                <div>
+                    <label style="display: block;font-size: 22px;" for="datepicker">Choose start and end date</label>
+                    <input type="text" name="basic" id="datepicker" value="01/01/2022 - 07/27/2022">
+                </div>
 
-        <table class="table__history element-blue">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+                <div>
+                    <input type="checkbox" id="showDeleted">
+                    <label for="showDeleted" style="font-size: 22px;">Show deleted?</label>
+                </div>
+
+                <div class="categories-wrapper">
+                    <p>Category of expense</p>
+
+                    <div>
+                        <input type="radio" name="category" id="all-categories" value="-1" checked>
+                        <label for="all-categories"><b>All categories</b></label>
+                    </div>
+
+                    @for((x, y) <- categories){
+                        <div>
+                            <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
+                            <label for="@{x.name}"><b>@{x.name}</b></label>
+                        </div>
+                        <div class="sub-categories">
+                        @for(z <- y){
+                            <div>
+                                <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
+                                <label for="@{z.name}">@{z.name}</label>
+                            </div>
+                        }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <table class="table__history element-blue">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
                 @for(expense <- expenses){
                     <tr class="inside-tr">
                         <td class="hidden">@expense.expense_id</td>
@@ -54,7 +86,10 @@
                         <td class="table__remove"><button ><i class="fa-solid fa-xmark red_mark"></i></button></td>
                     </tr>
                 }
-            </tbody>
-        </table>
+</tbody>
+</table>
+
+        </div>
+
     </body>
 </html>

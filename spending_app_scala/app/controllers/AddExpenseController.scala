@@ -3,7 +3,7 @@ package controllers
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import daos.CategoryDao
+import daos.{CategoryDao, TuplesUnpack}
 import models.Category
 import play.api.data.Form
 import play.api.data.Forms.{bigDecimal, mapping, nonEmptyText, number, text}
@@ -26,28 +26,6 @@ case class ExpenseForInsert(
                              description: String) {
 }
 
-object TuplesUnpack {
-  def unpackFuture(ex: ExecutionContext)(tuple: Future[Any]): Future[List[Seq[Any]]] = {
-    tuple.map {
-      x => {
-        unpack_rec(x)
-      }
-    }(ex)
-  }
-
-  def unpack(tuple: (Any, Seq[Any])): List[Seq[Any]] = {
-    unpack_rec(tuple)
-  }
-
-  private def unpack_rec(tuple2: Any): List[Seq[Any]] = {
-    tuple2 match {
-      case (x: (Any, Seq[Any]), y: Seq[Any]) => unpack_rec(x) ::: List(y)
-      case (x: Seq[Any], y: Seq[Any]) => List(x, y)
-      case ((), y: Seq[Any]) => List(y)
-      case x => throw new Exception("unpack_rec: unexpected not tuple" + x)
-    }
-  }
-}
 
 
 @Singleton

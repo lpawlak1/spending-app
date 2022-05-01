@@ -12,6 +12,8 @@ import javax.inject.Inject
 import scala.concurrent.Future
 
 trait ExpenseDao {
+  def getExpensesSum(u_id: Int): Future[Double]
+
   def findAll: Future[Seq[Expense]]
 
   def insert(ex: Expense): Future[Int]
@@ -79,5 +81,9 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
       .filterOpt(end_date)(_.purchase_date <= DateTimeFormatter.getDateFromString(_))
       .filterIf(!del)(ex => ex.deleted === false)
       .result
+  }
+
+  def getExpensesSum(u_id: Int): Future[Double] = db.run {
+    sql"""select public.get_current_users_expenses_sum(${u_id});""".as[Double].head
   }
 }

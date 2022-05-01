@@ -6,7 +6,7 @@ import slick.jdbc.JdbcProfile
 import slick.lifted.ProvenShape
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CategoryDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
   extends CategoryDao
@@ -44,4 +44,27 @@ trait CategoryDao {
   def findTopLevelCategories: Future[Seq[Category]]
 
   def findSubCategories(parentId: Int): Future[Seq[Category]]
+}
+
+object TuplesUnpack {
+  def unpackFuture(ex: ExecutionContext)(tuple: Future[Any]): Future[List[Seq[Any]]] = {
+    tuple.map {
+      x => {
+        unpack_rec(x)
+      }
+    }(ex)
+  }
+
+  def unpack(tuple: (Any, Seq[Any])): List[Seq[Any]] = {
+    unpack_rec(tuple)
+  }
+
+  private def unpack_rec(tuple2: Any): List[Seq[Any]] = {
+    tuple2 match {
+      case (x: (Any, Seq[Any]), y: Seq[Any]) => unpack_rec(x) ::: List(y)
+      case (x: Seq[Any], y: Seq[Any]) => List(x, y)
+      case ((), y: Seq[Any]) => List(y)
+      case x => throw new Exception("unpack_rec: unexpected not tuple" + x)
+    }
+  }
 }
