@@ -81,6 +81,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
       .filterOpt(start_date)(_.purchase_date >= DateTimeFormatter.getDateFromString(_))
       .filterOpt(end_date)(_.purchase_date <= DateTimeFormatter.getDateFromString(_))
       .filterIf(!del)(ex => ex.deleted === false)
+      .sortBy(_.purchase_date.asc)
       .result
   }
 

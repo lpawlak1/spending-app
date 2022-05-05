@@ -16,6 +16,10 @@ $(function() {
         window.location.href = `/history/table?user_id=${user_id}`;
     })
 
+    $('#expense-history-chart-bt').click(function() {
+        window.location.href = `/history/chart?user_id=${user_id}`;
+    })
+
     $('#surprise-btn').click(function() {
         alert("surprise");
     })

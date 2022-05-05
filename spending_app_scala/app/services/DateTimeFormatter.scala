@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 object DateTimeFormatter {
   def getDateTime(date: LocalDateTime): String = {
     date.format(java.time.format.DateTimeFormatter.ofPattern(
-      "dd/MM/YYYY HH:mm"
+      "YYYY-MM-dd HH:mm"
     ))
   }
   def getDateFromString(str: String): LocalDateTime = {
