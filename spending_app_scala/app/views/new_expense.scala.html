@@ -1,10 +1,10 @@
-@(form: Form[ExpenseForInsert], user_id : Int, categoriesList: Seq[(Category, Seq[Category])])(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+@(form: Form[ExpenseForInsert], user_id : Int, categoriesList: Seq[(Category, Seq[Category])], user_color: ThemeColor)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
 
 <!doctype html>
 <html lang="pl">
     @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
         List("Toast.min", "expense_add").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
-        "Add expense")(ThemeColor.default){ }
+        "Add expense")(user_color){ }
 <body>
         <div class="powrot-strzaleczka">
             <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
