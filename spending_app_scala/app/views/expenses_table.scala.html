@@ -72,7 +72,7 @@
                 </thead>
                 <tbody>
                 @for(expense <- expenses){
-                    <td class="inside-tr">
+                    <tr class="inside-tr">
                         <td class="hidden">@{expense.expense_id.getOrElse(-1)}</td>
                         <td class="table__name">@expense.expense_name</td>
                         <td> &nbsp;@expense.category_name </td>
