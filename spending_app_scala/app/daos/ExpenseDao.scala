@@ -2,6 +2,7 @@ package daos
 
 import models._
 import daos._
+import org.postgresql.util.PGmoney
 import play.api.db.slick._
 import services.DateTimeFormatter
 import slick.jdbc.{GetResult, JdbcProfile}
@@ -51,7 +52,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
     def deleted = column[Boolean]("deleted")
 
-    def category_name = column[Option[String]]("cat_name")
+    def category_name = column[Option[String]]("cat_name", O.PrimaryKey, O.AutoInc)
 
     def * : ProvenShape[Expense] = (
       expense_id.?, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,

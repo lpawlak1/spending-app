@@ -63,7 +63,7 @@ CREATE TRIGGER email_trigger_user BEFORE INSERT OR UPDATE ON public."user"
 
 create table Budget(
    B_ID serial primary key,
-   B_Amount money not null,
+   B_Amount real not null,
    B_Starting_Date timestamp not null default now(),
    U_ID int not null,
    B_Active boolean not null default true,
@@ -85,7 +85,7 @@ insert into Category(Cat_Name) VALUES ('Food');
 insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Drinks', (select Cat_ID from Category where cat_name = 'Food'));
 
 
-create or replace procedure insert_budget(u_id int, new_budget money)
+create or replace procedure insert_budget(u_id int, new_budget real)
 language plpgsql
 as $$
     declare
@@ -112,7 +112,7 @@ as $$
                );
     END;
 $$;
-call insert_budget(1, cast (1500.00 as money));
+call insert_budget(1, cast (1500.00 as real));
 
 drop function if exists public.get_all_months_between;
 create or replace function public.get_all_months_between(start_date timestamp, end_date timestamp) returns table(month text,year text) as
@@ -134,7 +134,7 @@ $$
 $$ language plpgsql;
 
 drop function if exists public.get_budget_per_month(u_id int);
-create or replace function get_budget_per_month(u_id int) returns table(budget money, month text, year text) as $body$
+create or replace function get_budget_per_month(u_id int) returns table(budget real, month text, year text) as $body$
 declare
     startingDate timestamp;
     endingDate timestamp;
@@ -159,19 +159,19 @@ create table Expense(
     LastModificationDate timestamp not null default now(),
     DateOfPurchase timestamp not null default now(),
     Description varchar,
-    Price money not null,
+    Price real not null,
     Deleted bool not null,
     constraint fk_user_expense foreign key (U_ID) references public.User (U_ID)
 );
 
 drop function if exists public.get_users_current_budget(u_id int);
-create or replace function get_users_current_budget(u_id int) returns money as $$
+create or replace function get_users_current_budget(u_id int) returns real as $$
 declare
-    ret_value money;
+    ret_value real;
 begin
     with
     wydatki as (
-        select coalesce(sum(price), 0::money) as sum_price
+        select coalesce(sum(price), 0::real) as sum_price
         from expense e
         where e.u_id = $1
           and e.dateofpurchase
@@ -189,11 +189,11 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function public.get_current_users_expenses_sum(u_id int) returns money as $$
+create or replace function public.get_current_users_expenses_sum(u_id int) returns real as $$
 declare
-    ret_value money;
+    ret_value real;
 begin
-    select coalesce(sum(price), 0::money) as sum_price
+    select coalesce(sum(price), 0::real) as sum_price
     into ret_value
     from expense e
     where e.u_id = $1
