@@ -63,6 +63,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Category</th>
                         <th>Date</th>
                         <th>Price</th>
                         <th>Description</th>
@@ -71,9 +72,10 @@
                 </thead>
                 <tbody>
                 @for(expense <- expenses){
-                    <tr class="inside-tr">
+                    <td class="inside-tr">
                         <td class="hidden">@{expense.expense_id.getOrElse(-1)}</td>
                         <td class="table__name">@expense.expense_name</td>
+                        <td> &nbsp;@expense.category_name </td>
                         <td class="table__date">@{DateTimeFormatter.getDateTime(expense.purchase_date)}</td>
                         <td class="table__price">@expense.price</td>
                         <td class="table__description">@expense.desc</td>

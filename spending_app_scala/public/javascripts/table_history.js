@@ -42,11 +42,21 @@ function reload() {
             else {
                 button = `<td class="table__readd"><button><i class="fa-solid fa-check green_mark"></i></button></td>`
             }
+            console.log(`<tr class="inside-tr">
+                <td class="hidden">${expense.id}</td>
+                <td class="table__name">${expense.name}</td>
+                <td> ${expense.category}</td>
+                <td class="table__date">${expense.purchase_date}</td>
+                <td class="table__price">${expense.price}</td>
+                <td class="table__description">${expense.desc}</td>
+                ${button}
+            </tr>`);
 
             $('.table__history tbody').append(
                 `<tr class="inside-tr">
                     <td class="hidden">${expense.id}</td>
                     <td class="table__name">${expense.name}</td>
+                    <td> ${expense.category}</td>
                     <td class="table__date">${expense.purchase_date}</td>
                     <td class="table__price">${expense.price}</td>
                     <td class="table__description">${expense.desc}</td>

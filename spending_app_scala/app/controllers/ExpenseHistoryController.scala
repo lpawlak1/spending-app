@@ -92,7 +92,8 @@ class ExpenseHistoryController @Inject()(
                 "purchase_date" -> x.purchase_date.toString,
                 "desc" -> x.desc.getOrElse(""),
                 "price" -> x.price.toString,
-                "deleted" -> x.deleted.toString
+                "deleted" -> x.deleted.toString,
+                "category" -> x.category_name.getOrElse("")
               )
             }))
           })
