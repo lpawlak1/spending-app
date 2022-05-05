@@ -3,8 +3,8 @@ package controllers
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import daos.{CategoryDao, TuplesUnpack}
-import models.Category
+import daos.{CategoryDao, ExpenseDao, TuplesUnpack}
+import models.{Category, Expense}
 import play.api.data.Form
 import play.api.data.Forms.{bigDecimal, mapping, nonEmptyText, number, text}
 import play.api.i18n
@@ -31,6 +31,7 @@ case class ExpenseForInsert(
 @Singleton
 class AddExpenseController  @Inject()(
                                      categoryDAO: CategoryDao,
+                                     expenseDAO: ExpenseDao,
                                      cc: ControllerComponents,
                                      @Named("user-authorization-actor") userAuthorizationActor: ActorRef
 )(implicit ec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
@@ -93,17 +94,16 @@ class AddExpenseController  @Inject()(
       },
       expenseForInsert => {
         val purchaseDate = LocalDateTime.parse(expenseForInsert.purchaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
-        val expense = (
-          None,
-          expenseForInsert.name,
-          expenseForInsert.amount,
-          purchaseDate,
-          expenseForInsert.category,
-          expenseForInsert.description,
-          user_id
-        )
-        //insert into db
-        Future(Ok(expense.toString()))
+        val expense = Expense(expense_name = expenseForInsert.name,
+                              category_id = expenseForInsert.category,
+                              price = expenseForInsert.amount.toDouble,
+                              purchase_date = purchaseDate,
+                              desc = if (expenseForInsert.description != "") Some(expenseForInsert.description) else None,
+                              deleted = false,
+                              user_id = user_id.get.toInt,
+                              added_date = LocalDateTime.now(),
+                              last_mod_date = LocalDateTime.now())
+        expenseDAO.insert(expense).map(x => { Redirect("/?user_id=" + user_id.get) })
       }
     )
   }

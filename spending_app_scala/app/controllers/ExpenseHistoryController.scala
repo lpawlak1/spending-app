@@ -83,7 +83,7 @@ class ExpenseHistoryController @Inject()(
           expenseDao.findWithFilters(user_id.get.toInt, if (category_id.isDefined && category_id.get != -1) category_id else None, start_date, end_date, del.getOrElse(false)).map(ret => {
             Ok(Json.toJson(ret.map { x =>
               Map(
-                "id" -> x.expense_id.toString,
+                "id" -> x.expense_id.get.toString,
                 "name" -> x.expense_name.toString,
                 "category_id" -> x.category_id.toString,
                 "user_id" -> x.user_id.toString,

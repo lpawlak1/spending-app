@@ -31,7 +31,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
   private class ExpenseTable(tag: Tag)
     extends Table[models.Expense](tag, Some("public"), "test1") {
-    def expense_id = column[Int]("ex_id")
+    def expense_id = column[Int]("ex_id", O.PrimaryKey, O.AutoInc)
 
     def expense_name = column[String]("ex_name")
 
@@ -51,10 +51,10 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
     def deleted = column[Boolean]("deleted")
 
-    def category_name = column[String]("cat_name")
+    def category_name = column[Option[String]]("cat_name")
 
     def * : ProvenShape[Expense] = (
-      expense_id, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
+      expense_id.?, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
       desc, price, deleted, category_name
       ).mapTo[models.Expense]
   }

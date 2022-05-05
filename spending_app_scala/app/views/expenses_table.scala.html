@@ -1,8 +1,7 @@
 @import services.DateTimeFormatter
-@import views.html.helper.form
-@import play.filters.csrf.CSRF
 @import views.html.helper.CSRF
 @import views.html.helper.form
+@import models.Expense
 @(categories: List[(Category, Seq[Category])], expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
 
 
@@ -78,7 +77,7 @@
                 <tbody>
                 @for(expense <- expenses){
                     <tr class="inside-tr">
-                        <td class="hidden">@expense.expense_id</td>
+                        <td class="hidden">@{expense.expense_id.getOrElse(-1)}</td>
                         <td class="table__name">@expense.expense_name</td>
                         <td class="table__date">@{DateTimeFormatter.getDateTime(expense.purchase_date)}</td>
                         <td class="table__price">@expense.price</td>
