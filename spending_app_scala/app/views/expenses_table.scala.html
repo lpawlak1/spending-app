@@ -8,13 +8,8 @@
 <!doctype html>
 <html lang="en">
     @head(List("Toast.min",
-               "daterangepicker",
                "style").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
-        List("jquery-3.6.0.min",
-            "Toast.min",
-            "micromodal.min",
-            "moment.min",
-            "daterangepicker",
+        List("Toast.min",
             "table_history").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
         "Expenses history")(themeColor){ }
     <body>
@@ -28,7 +23,7 @@
         </div>
 
         <div class="ex-hist-wrapper">
-            <div class="horizontal-filters">
+            <div class="horizontal-filters element-blue">
                 <div>
                     <label style="display: block;font-size: 22px;" for="datepicker">Choose start and end date</label>
                     <input type="text" name="basic" id="datepicker" value="01/01/2022 - 07/27/2022">
