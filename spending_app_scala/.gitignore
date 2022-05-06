@@ -2,3 +2,8 @@
 .idea
 **/.bloop
 
+../actors_schema_1.png
+.metals/
+.vscode/
+project/metals.sbt
+../target/

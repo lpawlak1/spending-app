@@ -10,10 +10,9 @@
 <html lang="en">
     @head(
         List(routes.Assets.versioned("stylesheets/style.css")),
-        List(routes.Assets.versioned("javascripts/jquery-3.6.0.min.js"), routes.Assets.versioned("javascripts/Toast.min.js"),routes.Assets.versioned("javascripts/index.js")),
+        List(routes.Assets.versioned("javascripts/Toast.min.js"),routes.Assets.versioned("javascripts/index.js")),
         "Main page")(user_color){ }
     <body>
-
         <div class="nav-wrapper">
             <div class="left-date shadow">
                 <p>@{
@@ -53,9 +52,9 @@
                 <div class="li_main_wrapper">
                     <li class="li_main">
                         <ul class="ul_main"><button id="add-new-expense-bt">Add new expense</button></ul>
-                        <ul class="ul_main"><button>Show expenses on chart</button></ul>
+                        <ul class="ul_main"><button id="expense-history-chart-bt">Show expenses on chart</button></ul>
                         <ul class="ul_main"><button>Compare expenses</button></ul>
-                        <ul class="ul_main"><button>Check expense history</button></ul>
+                        <ul class="ul_main"><button id="expense-history-table-bt">Check expense history</button></ul>
                         <ul class="ul_main"><button id="surprise-btn">Surprise :)</button></ul>
                     </li>
                 </div>

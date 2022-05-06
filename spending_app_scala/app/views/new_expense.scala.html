@@ -1,0 +1,52 @@
+@(form: Form[ExpenseForInsert], user_id : Int, categoriesList: Seq[(Category, Seq[Category])], user_color: ThemeColor)(implicit requestHeader: RequestHeader, messagesProvider: MessagesProvider)
+
+<!doctype html>
+<html lang="pl">
+    @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
+        List("Toast.min", "expense_add").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
+        "Add expense")(user_color){ }
+<body>
+        <div class="powrot-strzaleczka">
+            <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
+        </div>
+        <div class="add__expense element-gradient">
+            <div class="flex-col">
+
+                @helper.form(action = routes.AddExpenseController.post_simple_form(None)){
+                    @helper.CSRF.formField
+                    <p id="category-label"><b>Category of expense</b></p>
+                    @*                "category" -> number,*@
+                    <div class="categories-wrapper">
+                    @for((x,y) <- categoriesList){
+                        <div>
+                            <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
+                            <label for="@{x.name}"><b>@{x.name}</b></label>
+                        </div>
+                        <div class="sub-categories">
+                        @for(z <- y){
+                            <div>
+                                <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
+                                <label for="@{z.name}">@{z.name}</label>
+                            </div>
+                        }
+                        </div>
+                    }
+                    </div>
+                    @*                "amount" -> bigDecimal,*@
+                    <p id="amount-label"><b>Amount</b></p>
+                    @helper.inputText(form("amount"), Array("class" -> "modal__text", "placeholder" -> "1000.00", "id" -> "amount", "name" -> "amount", "min" -> "1", "step" -> "0.01", "type" -> "number").map(x => {Symbol(x._1) -> x._2}) :  _*)
+    @*                "name" -> nonEmptyText,*@
+                    <p id="name-label"><b>Expense name</b></p>
+                    @helper.inputText(form("name"), Array("class" -> "name_input", "placeholder" -> "Expense name", "id" -> "name", "name" -> "name", "type" -> "text").map(x => {Symbol(x._1) -> x._2}) :  _*)
+    @*                "purchaseDate" -> nonEmptyText,*@
+                    <p id="purchase-date-label"><b>Purchase date</b></p>
+                    @helper.inputText(form("purchaseDate"), Array("class" -> "modal__text", "id" -> "purchaseDate", "name" -> "purchaseDate", "type" -> "datetime-local").map(x => {Symbol(x._1) -> x._2}) :  _*)
+    @*                "description" -> text*@
+                    <p id="description-label"><b>Description</b></p>
+                    @helper.inputText(form("description"), Array("class" -> "modal__text", "placeholder" -> "Description", "id" -> "description", "name" -> "description", "type" -> "text").map(x => {Symbol(x._1) -> x._2}) :  _*)
+                    <button class="modal__btn modal__btn-primary" id="add_submit" type="submit">Add new expense</button>
+                }
+            </div>
+        </div>
+    </body>
+</html>

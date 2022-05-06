@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="pl">
     @head(List("Toast.min", "style", "dialog").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
-          List("jquery-3.6.0.min", "Toast.min", "micromodal.min", "user_config").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
+          List("Toast.min", "user_config").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),
           "User Configuration")(userColor){ }
 <body>
 

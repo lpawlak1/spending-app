@@ -1,4 +1,3 @@
-
 /** {*/
 /*    font-size: 22px;*/
 /*}*/
@@ -23,7 +22,7 @@ body {
     box-shadow: 9px 6px 17px -13px rgba(66, 68, 90, 1);
 }
 
-p, li, ul, button, input{
+p, li, ul, button, input {
     font-size: 22px;
 }
 
@@ -39,6 +38,7 @@ p, li, ul, button, input{
     width: 300px;
     height: 4rem;
 }
+
 .left-date p {
     font-size: 22px;
     text-align: center;
@@ -49,6 +49,7 @@ p, li, ul, button, input{
     width: 100%;
     justify-content: flex-end;
 }
+
 .right-li > ul {
     align-self: flex-end;
     list-style: none;
@@ -56,6 +57,7 @@ p, li, ul, button, input{
     width: 150px;
     padding: 0;
 }
+
 /* .right-li > ul > li {
     border: 3px solid aliceblue;
     padding: 5px;
@@ -115,7 +117,7 @@ p, li, ul, button, input{
     padding: 0;
     margin: auto;
     margin-bottom: 10px;
-    margin-top : 10px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -123,11 +125,11 @@ p, li, ul, button, input{
     /*background-color: #7C9ECA;*/
 }
 
-.li_main .ul_main:nth-child(1){
+.li_main .ul_main:nth-child(1) {
     margin-top: 5px;
 }
 
-.li_main .ul_main:last-child{
+.li_main .ul_main:last-child {
     margin-bottom: 5px;
 }
 
@@ -141,7 +143,7 @@ p, li, ul, button, input{
     margin-bottom: 5px;
 }
 
-button{
+button {
     font-size: 20px;
     border-radius: 5px;
     cursor: pointer;
@@ -159,7 +161,7 @@ button:hover {
     color: #ffffff;
 }
 
-.nav-wrapper-login{
+.nav-wrapper-login {
     width: 100%;
     height: 90vh;
     display: flex;
@@ -200,13 +202,14 @@ button:hover {
     flex-direction: column;
 }
 
-.element-gradient{
+
+.element-gradient {
     border: 10px solid aliceblue;
     padding: 10px;
-    background-image: linear-gradient(#c1cccc,#7C9ECA, #5184c7);
+    background-image: linear-gradient(#c1cccc, #7C9ECA, #5184c7);
 }
 
-.login-button{
+.login-button {
     border: 1px solid #757575;
     background-color: var(--primary-color);
     color: #ffffff;
@@ -226,14 +229,15 @@ button:hover {
     background-color: #7C9ECA;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=number], input[type=datetime-local] {
     width: 100%;
     margin: 20px 0;
     padding: 15px 50px;
     display: inline-block;
     box-sizing: border-box;
-
 }
+
+
 
 .login-background dl {
     margin: 0;
@@ -243,9 +247,6 @@ input[type=text], input[type=password] {
     margin-inline-start: 0;
 }
 
-.login-background dd.error {
-    display: none;
-}
 
 ::placeholder {
     color: rgb(88, 87, 87);
@@ -261,13 +262,22 @@ input[type=text], input[type=password] {
     height: 140px;
 }
 
-.login-background dt {
+form dd {
+    margin-inline-start: 0;
+}
+
+form dd.error {
     display: none;
 }
 
-dd.info {
+form dt {
     display: none;
 }
+
+form dd.info {
+    display: none;
+}
+
 
 form {
     display: flex;
@@ -281,6 +291,7 @@ form {
 .dialog-closed {
     display: none;
 }
+
 .dialog-open {
     display: block;
 }
@@ -320,4 +331,143 @@ main .color__btn {
 }
 .hidden {
     display: none;
+}
+
+.dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.table__history{
+    width: 90%;
+    margin-inline: auto;
+    font-size: 20px;
+    height: min-content;
+}
+.table__date{
+    text-align: center;
+}
+.table__description{}
+.table__name{}
+.table__price{}
+
+.table__remove{
+    width: 60px;
+}
+
+.red_mark {
+    color: red;
+}
+.green_mark {
+    color: green;
+}
+
+input[name=basic]{
+    width: 225px;
+    font-size: 20px;
+    padding: 0;
+}
+
+.sub-categories {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 10px;
+}
+
+.add__expense {
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-self: center;
+    width: 500px;
+    padding: 50px;
+    margin-bottom: 0px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.add__expense dl {
+    margin: 0;
+}
+
+.add__expense p {
+    margin: 0;
+    margin-top: 5px;
+    align-self: flex-start;
+}
+
+.add__expense input {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.add__expense .categories-wrapper p {
+    font-size: 18px;
+}
+
+.add__expense button[type=submit] {
+    width: 400px;
+    height: 50px;
+    font-size: 22px;
+}
+
+.is-invalid {
+    color: red;
+}
+
+.add__expense input[type=text],.add__expense  input[type=password],.add__expense  input[type=number],.add__expense  input[type=datetime-local] {
+    width: 424px;
+}
+
+.flex-col {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+.horizontal-filters{
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+
+.ex-hist-wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    justify-content: space-evenly;
 }
