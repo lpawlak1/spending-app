@@ -81,9 +81,29 @@ create table Category(
 );
 
 insert into Category(Cat_Name) VALUES ('Transportation');
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Fuel', (select Cat_ID from Category where cat_name = 'Transportation'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Car maintenance', (select Cat_ID from Category where cat_name = 'Transportation'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Public transport', (select Cat_ID from Category where cat_name = 'Transportation'));
 insert into Category(Cat_Name) VALUES ('Food');
 insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Drinks', (select Cat_ID from Category where cat_name = 'Food'));
-
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Pet food', (select Cat_ID from Category where cat_name = 'Food'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Groceries', (select Cat_ID from Category where cat_name = 'Food'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Restaurants/Dining', (select Cat_ID from Category where cat_name = 'Food'));
+insert into Category(Cat_Name) VALUES ('Clothing');
+insert into Category(Cat_Name) VALUES ('Healthcare');
+insert into Category(Cat_Name) VALUES ('Housing');
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Mortgage/Rent', (select Cat_ID from Category where cat_name = 'Housing'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Property tax', (select Cat_ID from Category where cat_name = 'Housing'));
+insert into Category(Cat_Name) VALUES ('Utilities');
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Electricity', (select Cat_ID from Category where cat_name = 'Utilities'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Water', (select Cat_ID from Category where cat_name = 'Utilities'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Garbage', (select Cat_ID from Category where cat_name = 'Utilities'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Phone', (select Cat_ID from Category where cat_name = 'Utilities'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Internet', (select Cat_ID from Category where cat_name = 'Utilities'));
+insert into Category(Cat_Name) VALUES ('Entertainment');
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Alcohol', (select Cat_ID from Category where cat_name = 'Entertainment'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Vacations', (select Cat_ID from Category where cat_name = 'Entertainment'));
+insert into Category(Cat_Name, Cat_Superior_Cat_Id) VALUES ('Subscriptions', (select Cat_ID from Category where cat_name = 'Entertainment'));
 
 create or replace procedure insert_budget(u_id int, new_budget real)
 language plpgsql
