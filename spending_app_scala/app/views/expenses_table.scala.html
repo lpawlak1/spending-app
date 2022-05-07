@@ -36,26 +36,26 @@
 
                 <div class="categories-wrapper">
                     <p>Category of expense</p>
-
-                    <div>
-                        <input type="radio" name="category" id="all-categories" value="-1" checked>
-                        <label for="all-categories"><b>All categories</b></label>
+                    <input style="display: none;" id="category_id_input" type="text" name="category" placeholder="Name of expense" value="-1">
+                    <div class="categories-wrapper" style="width: 225px; font-size: 22px;">
+                        <select id="select-category" style="width: 100%">
+                            <option value="-1">All categories</option>
+                            @for((x,y) <- categories){
+                                <option value="@{x.id}">@{x.name}</option>
+                            }
+                        </select>
+                        <div style="margin-top: 10px;width: 100%">
+                            @for((x,y) <- categories){
+                                <select id="select-@{x.id}" class="sub-category-select" style="width: 100%;">
+                                    <option value="@{x.id}">All subcategories</option>
+                                    @for(z <- y){
+                                        <option value="@{z.id}">@{z.name}</option>
+                                    }
+                                </select>
+                            }
+                        </div>
                     </div>
 
-                    @for((x, y) <- categories){
-                        <div>
-                            <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
-                            <label for="@{x.name}"><b>@{x.name}</b></label>
-                        </div>
-                        <div class="sub-categories">
-                        @for(z <- y){
-                            <div>
-                                <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
-                                <label for="@{z.name}">@{z.name}</label>
-                            </div>
-                        }
-                        </div>
-                    }
                 </div>
             </div>
 

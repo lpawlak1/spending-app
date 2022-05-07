@@ -1,3 +1,5 @@
+let category_id=1;
+
 $(function() {
     const urlParams = new URLSearchParams(location.search);
     const id = urlParams.get('user_id');
@@ -23,6 +25,27 @@ $(function() {
     if (error_code && error_code === '1') {
         new Toast({message: urlParams.get('err_msg'), type: 'error'});
     }
+
+    $('.sub-category-select').hide();
+
+    $('#select-category').on('change', function() {
+        $('.sub-category-select').hide();
+        if ($(this).val() === '0') {
+            $('#category_id_input').val('');
+        } else {
+            $('#category_id_input').val($(`#select-${$(this).val()}`).val());
+        }
+        $(`#select-${$(this).val()}`).show();
+    });
+
+    $('.sub-category-select').on('change', function() {
+        category_id = $(this).val();
+        if (category_id === '0') {
+            $('#category_id_input').val('');
+        } else {
+            $('#category_id_input').val(category_id);
+        }
+    });
 
     $('#add_submit').click(function(e) {
         const form = $(this).closest('form');

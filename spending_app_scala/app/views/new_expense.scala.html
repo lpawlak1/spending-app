@@ -14,24 +14,27 @@
 
                 @helper.form(action = routes.AddExpenseController.post_simple_form(None)){
                     @helper.CSRF.formField
+                    <input style="display: none;" id="category_id_input" type="text" name="category" placeholder="Name of expense">
                     <p id="category-label"><b>Category of expense</b></p>
-                    @*                "category" -> number,*@
                     <div class="categories-wrapper">
-                    @for((x,y) <- categoriesList){
-                        <div>
-                            <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
-                            <label for="@{x.name}"><b>@{x.name}</b></label>
+                        <select style="font-size: 22px;" id="select-category">
+                            <option value="0">--Choose category--</option>
+                            @for((x,y) <- categoriesList){
+                                <option value="@{x.id}">@{x.name}</option>
+                            }
+                        </select>
+                        <div style="margin-top: 10px;">
+                            @for((x,y) <- categoriesList){
+                                <select id="select-@{x.id}" class="sub-category-select" style="font-size: 22px;">
+                                    <option value="@{x.id}">--Choose subcategory--</option>
+                                    @for(z <- y){
+                                        <option value="@{z.id}">@{z.name}</option>
+                                    }
+                                </select>
+                            }
                         </div>
-                        <div class="sub-categories">
-                        @for(z <- y){
-                            <div>
-                                <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
-                                <label for="@{z.name}">@{z.name}</label>
-                            </div>
-                        }
-                        </div>
-                    }
                     </div>
+
                     @*                "amount" -> bigDecimal,*@
                     <p id="amount-label"><b>Amount</b></p>
                     @helper.inputText(form("amount"), Array("class" -> "modal__text", "placeholder" -> "1000.00", "id" -> "amount", "name" -> "amount", "min" -> "1", "step" -> "0.01", "type" -> "number").map(x => {Symbol(x._1) -> x._2}) :  _*)

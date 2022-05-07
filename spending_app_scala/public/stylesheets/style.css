@@ -229,15 +229,21 @@ button:hover {
     background-color: #7C9ECA;
 }
 
-input[type=text], input[type=password], input[type=number], input[type=datetime-local] {
+input[type=text], input[type=password], input[type=number], input[type=datetime-local], .add__expense select {
     width: 100%;
     margin: 20px 0;
     padding: 15px 50px;
     display: inline-block;
     box-sizing: border-box;
 }
-
-
+select {
+    font-size: 22px;
+    width: 100%;
+    margin: 10px 0;
+    padding: 5px 10px;
+    display: inline-block;
+    box-sizing: border-box;
+}
 
 .login-background dl {
     margin: 0;
@@ -431,9 +437,13 @@ input[name=basic]{
     align-self: flex-start;
 }
 
-.add__expense input {
+.add__expense input, .add__expense select {
     padding-left: 30px;
     padding-right: 30px;
+}
+.add__expense select {
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 .add__expense .categories-wrapper p {
     font-size: 18px;
@@ -449,7 +459,7 @@ input[name=basic]{
     color: red;
 }
 
-.add__expense input[type=text],.add__expense  input[type=password],.add__expense  input[type=number],.add__expense  input[type=datetime-local] {
+.add__expense input[type=text],.add__expense  input[type=password],.add__expense  input[type=number],.add__expense  input[type=datetime-local], .add__expense select {
     width: 424px;
 }
 
@@ -463,6 +473,7 @@ input[name=basic]{
     display: flex;
     flex-direction: column;
     margin-left: 50px;
+    height: 350px;
 }
 
 .ex-hist-wrapper {

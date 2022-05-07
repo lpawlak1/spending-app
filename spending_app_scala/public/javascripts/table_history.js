@@ -120,5 +120,25 @@ $(function(){
         reload();
     });
 
+    $('.sub-category-select').hide();
+
+    $('#select-category').on('change', function() {
+        $('.sub-category-select').hide();
+        if ($(this).val() === '-1') {
+            $('#category_id_input').val(-1);
+        } else {
+            $('#category_id_input').val($(`#select-${$(this).val()}`).val());
+        }
+        cat_id_ = $('#category_id_input').val();
+        $(`#select-${$(this).val()}`).show();
+        reload();
+    });
+
+    $('.sub-category-select').on('change', function() {
+        cat_id_ = $(this).val();
+        $('#category_id_input').val(cat_id_);
+        reload();
+    });
+
     reload();
 });
