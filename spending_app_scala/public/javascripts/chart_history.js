@@ -5,78 +5,106 @@ let seeDeleted_ = false;
 let cat_id_ = -1;
 
 let chart_1;
+let chart_1_main;
 
-function reload() {
+function reload_chart_1() {
     $.getJSON(`/history/get_row?user_id=${id}&start_date=${start_.format('DD.MM.YYYY')}&end_date=${end_.format('DD.MM.YYYY')}&del=${seeDeleted_.toString()}&category_id=${cat_id_}`, (res => {
-        // for (const expense of res) {
-        //     if (expense.deleted === 'false') {
-        //             <td class="hidden">${expense.id}</td>
-        //             <td class="table__name">${expense.name}</td>
-        //             <td class="table__date">${expense.purchase_date}</td>
-        //             <td class="table__price">${expense.price}</td>
-        //             <td class="table__description">${expense.desc}</td>
 
-        const data = res.map(expense => {return {y: expense.price, x: new Date(expense.purchase_date).getMonth()}});
+        const data = res.map(expense => {return {y: expense.price, x: new Date(expense.purchase_date)}});
 
-        console.log(res.map(expense => {return new Date(expense.purchase_date).getMonth()}));
-
-
-        let chart = new Chart(chart_1, {
-            type: 'line',
-            data: {
-                datasets: [{
-                    // labels: data.map(expense => new Date(expense.x).getDay()),
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)'
-                    ]
-                }],
-            },
-            options: {
-                scales: {
-                    x: {
-                        ticks: {
-                            autoSkip: false,
-                            maxRotation: 0,
-                            major: {
-                                enabled: true
-                            },
-                        }
-                        // max: '2021-11-07 00:00:00',
+        const totalDuration = 1000;
+        const delayBetweenPoints = totalDuration / data.length;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const animation = {
+            x: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.xStarted) {
+                        return 0;
                     }
+                    ctx.xStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            },
+            y: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.yStarted) {
+                        return 0;
+                    }
+                    ctx.yStarted = true;
+                    return ctx.index * delayBetweenPoints;
                 }
             }
-        });
-
-        // const myChart = new Chart(chart_1, {
-        //     type: 'line',
-        //     data: {
-        //         labels: labels,
-        //         backgroundColor: 'rgba(255, 255, 255, 1)',
-        //         datasets: [{
-        //             label: 'Your expenses',
-        //             data: data,
-        //                 'rgba(54, 162, 235, 1)',
-        //                 'rgba(255, 206, 86, 1)',
-        //                 'rgba(75, 192, 192, 1)',
-        //                 'rgba(153, 102, 255, 1)',
-        //                 'rgba(255, 159, 64, 1)'
-        //             ],
-        //             borderWidth: 1
-        //         }]
-        //     },
-        //     options: {
-        //         scales: {
-        //             x: {
-        //             }
-        //         }
-        //     }
-        // });
+        };
+        if (chart_1_main !== undefined) {
+            chart_1_main.data.datasets[0].data = data;
+            chart_1_main.update();
+        }
+        else {
+            chart_1_main = new Chart(chart_1, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: data,
+                        title: 'Expenses',
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)'
+                        ]
+                    }],
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 0,
+                                major: {
+                                    enabled: true
+                                },
+                                // color: function(context) {
+                                //   return context.tick && context.tick.major ? '#FF0000' : 'rgba(0,0,0,0.1)';
+                                // },
+                                font: function (context) {
+                                    if (context.tick && context.tick.major) {
+                                        return {
+                                            weight: 'bold',
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    animation,
+                    interaction: {
+                        intersect: false
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4,
+                        }
+                    }
+                }
+            });
+        }
     }));
 }
+
 
 $(function(){
     chart_1 = $('#first_chart');
@@ -116,20 +144,20 @@ $(function(){
     }, function(start, end, label) {
         start_ = start;
         end_ = end;
-        reload();
+        reload_chart_1();
     });
     start_ = moment().startOf('month')
     end_ = moment().endOf('month')
 
     $("#showDeleted").change(function() {
         seeDeleted_ = $("#showDeleted").is(':checked');
-        reload();
+        reload_chart_1();
     });
 
     $("input[name=category]").change(function() {
         cat_id_ = $(this).val();
-        reload();
+        reload_chart_1();
     });
 
-    reload();
+    reload_chart_1();
 });
