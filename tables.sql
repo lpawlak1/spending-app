@@ -229,11 +229,16 @@ $$ language plpgsql;
 -- test features below
 
 create or replace view public.test1 as
-select  
+select
     e.*,
     (
-        select c.cat_name 
-        from public.category c 
+        select c.cat_name
+        from public.category c
+        where c.cat_id = e.cat_id
+    ),
+    (
+        select c.cat_superior_cat_id
+        from public.category c
         where c.cat_id = e.cat_id
     )
 from Expense e;

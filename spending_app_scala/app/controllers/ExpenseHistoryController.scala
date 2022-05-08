@@ -152,6 +152,22 @@ class ExpenseHistoryController @Inject()(
     }
   }
 
+  def getSumPerCategory(user_id: Option[String], category_id: Option[Int], start_date: Option[String], end_date: Option[String], del: Option[Boolean]) = Action.async {
+    (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
+      case true => {
+        expenseDao.getSubCategoriesSum(user_id.get.toInt, if (category_id.isDefined && category_id.get != -1) category_id else None, start_date, end_date, del.getOrElse(false)).map(f => {
+          Ok(Json.toJson(f.filter(ex => ex._1.isDefined && ex._2.isDefined).map { x =>
+            Map(
+              "category_name" -> x._1.get,
+              "price" -> x._2.get.toString,
+            )
+          }))
+        })
+      }
+      case false => Future.successful(Unauthorized)
+    }.flatten
+  }
+
   def delete(id: Int, del: Option[Boolean]) = Action {
     implicit request => {
       expenseDao.setDeleted(id, del.getOrElse(true)) //fire and forget :)

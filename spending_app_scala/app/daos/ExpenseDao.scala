@@ -22,6 +22,8 @@ trait ExpenseDao {
   def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[Expense]]
 
   def setDeleted(ex_id: Int, del: Boolean): Future[Int]
+
+  def getSubCategoriesSum(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[(Option[String], Option[Double])]]
 }
 
 class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -54,10 +56,11 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
 
     def category_name = column[Option[String]]("cat_name", O.PrimaryKey, O.AutoInc)
+    def superior_cat_id = column[Option[Int]]("cat_superior_cat_id", O.PrimaryKey, O.AutoInc)
 
     def * : ProvenShape[Expense] = (
       expense_id.?, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
-      desc, price, deleted, category_name
+      desc, price, deleted, category_name, superior_cat_id
       ).mapTo[models.Expense]
   }
 
@@ -76,17 +79,30 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 
   def findWithFilters(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[Expense]] = db.run {
-    expenses_table
-      .filter(_.user_id === u_id)
-      .filterOpt(category_id)(_.category_id === _)
-      .filterOpt(start_date)(_.purchase_date >= DateTimeFormatter.getDateFromString(_))
-      .filterOpt(end_date)(_.purchase_date <= DateTimeFormatter.getDateFromString(_))
-      .filterIf(!del)(ex => ex.deleted === false)
+    queryFiltering(u_id, category_id, start_date, end_date, del)
       .sortBy(_.purchase_date.asc)
       .result
   }
 
   def getExpensesSum(u_id: Int): Future[Double] = db.run {
     sql"""select public.get_current_users_expenses_sum(${u_id});""".as[Double].head
+  }
+
+  private def queryFiltering(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false) = {
+    expenses_table
+      .filter(_.user_id === u_id)
+      .filterOpt(category_id)((x,y) => x.category_id === y || x.superior_cat_id === y)
+      .filterOpt(start_date)(_.purchase_date >= DateTimeFormatter.getDateFromString(_))
+      .filterOpt(end_date)(_.purchase_date <= DateTimeFormatter.getDateFromString(_))
+      .filterIf(!del)(ex => ex.deleted === false)
+  }
+
+  def getSubCategoriesSum(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[(Option[String], Option[Double])]] = db.run {
+    queryFiltering(u_id, category_id, start_date, end_date, del)
+      .groupBy(_.category_name)
+      .map {
+        case (cat_name, rest) => (cat_name, rest.map(_.price).sum)
+      }
+      .result
   }
 }

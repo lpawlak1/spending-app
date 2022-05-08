@@ -482,3 +482,8 @@ input[name=basic]{
     grid-template-columns: 300px 1fr;
     justify-content: space-evenly;
 }
+.grid-2-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-evenly;
+}
