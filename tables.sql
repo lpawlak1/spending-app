@@ -11,6 +11,8 @@ create table public.User
     Col_ID           int
 );
 
+create index if not exists uid_user_index on public.User (u_id);
+
 -- create table with logins
 create table public.UserLogin
 (
@@ -192,6 +194,8 @@ begin
 end;
 $body$ language plpgsql;
 
+create unique index if not exists uid_budget on public.Budget(b_id, u_id);
+
 create table Expense
 (
     Ex_ID                serial primary key,
@@ -206,6 +210,9 @@ create table Expense
     Deleted              bool      not null,
     constraint fk_user_expense foreign key (U_ID) references public.User (U_ID)
 );
+
+create index if not exists uid_not_deleted_index on public.Expense (u_id) where deleted is false;
+create index if not exists date_purchase_expense_index on public.Expense (dateofpurchase);
 
 drop function if exists public.get_users_current_budget(u_id int);
 create or replace function get_users_current_budget(u_id int) returns real as
@@ -336,76 +343,76 @@ insert into budget(B_Amount, B_Starting_Date, U_ID, B_Active, AddedDate)
 values (500, '2022-03-01 00:00:00.000000', 1, false, now());
 
 -- Expense table inserts
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Car repair', 17, 1, 200, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Fuel', 16, 1, 100, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Rent', 7, 1, 350, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, Description, price, Deleted)
-values ('Ginger Ale - Imbir brewery', 20, 1, 'Favorite beer of Martyna', 22.50, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Netflix', 22, 1, 8.99, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Cat food', 3, 1, 10.22, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Pizza', 1, 1, 9.99, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Canteen lunch', 22, 1, 5.50, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Coca-cola', 2, 1, 2.50, '0');
-insert into public.expense(Ex_name, Cat_ID, U_ID, price, Deleted)
-values ('Bottled water', 2, 1, 0.80, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Car repair', 17, '2022-05-02 15:11:11.111111', '2022-05-02 15:11:11.111111', '2022-05-02 15:11:11.111111', 1, 200, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Fuel', 16, '2022-05-03 09:44:14.111111', '2022-05-03 09:44:14.111111', '2022-05-03 09:44:14.111111', 1, 100, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Rent', 7, '2022-05-04 23:10:54.111111', '2022-05-04 23:10:54.111111', '2022-05-04 23:10:54.111111', 1, 350, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, Description, price, Deleted)
+values ('Ginger Ale - Imbir brewery', 20, '2022-05-05 07:32:09.111111', '2022-05-05 07:32:09.111111', '2022-05-05 07:32:09.111111', 1, 'Favorite beer of Martyna', 22.50, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Netflix', 22, '2022-05-06 10:52:39.111111', '2022-05-06 10:52:39.111111', '2022-05-06 10:52:39.111111', 1, 8.10, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Cat food', 3, '2022-05-07 13:01:04.111111', '2022-05-07 13:01:04.111111', '2022-05-07 13:01:04.111111', 1, 10.20, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Pizza', 1, '2022-05-08 15:31:04.111111', '2022-05-08 15:31:04.111111', '2022-05-08 15:31:04.111111', 1, 9.40, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Canteen lunch', 22, '2022-05-09 15:22:04.111111', '2022-05-09 15:22:04.111111', '2022-05-09 15:22:04.111111', 1, 5.50, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Coca-cola', 2, '2022-05-10 15:44:01.111111', '2022-05-10 15:44:01.111111', '2022-05-10 15:44:01.111111', 1, 2.50, '0');
+insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
+values ('Bottled water', 2, '2022-05-11 17:18:51.111111', '2022-05-11 17:18:51.111111', '2022-05-11 17:18:51.111111', 1, 0.80, '0');
 
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
 values ('Michelin star dining', 5, '2022-04-08 11:11:11.111111', '2022-04-08 11:11:11.111111',
         '2022-04-08 11:11:11.111111', 1, 400, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Fuel', 16, '2022-04-08 11:11:11.111111', '2022-04-08 11:11:11.111111', '2022-04-08 11:11:11.111111', 1, 50,
+values ('Fuel', 16, '2022-04-09 12:11:11.111111', '2022-04-09 12:11:11.111111', '2022-04-09 12:11:11.111111', 1, 50,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Rent', 7, '2022-04-08 11:11:11.111111', '2022-04-08 11:11:11.111111', '2022-04-08 11:11:11.111111', 1, 350,
+values ('Rent', 7, '2022-04-09 13:11:11.111111', '2022-04-09 13:11:11.111111', '2022-04-09 13:11:11.111111', 1, 350,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
 values ('Ginger Ale - barrel', 20, '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111',
         '2022-04-10 10:32:11.111111', 1, 56.50, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Netflix', 22, '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', 1,
-        8.99, '0');
+values ('Netflix', 22, '2022-04-11 11:32:11.111111', '2022-04-11 11:32:11.111111', '2022-04-11 11:32:11.111111', 1,
+        8.90, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Cat food', 3, '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', 1,
-        12.34, '0');
+values ('Cat food', 3, '2022-04-12 12:32:11.111111', '2022-04-12 12:32:11.111111', '2022-04-12 12:32:11.111111', 1,
+        12.30, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Pizza', 1, '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', '2022-04-10 10:32:11.111111', 1, 24.35,
+values ('Pizza', 1, '2022-04-13 13:32:11.111111', '2022-04-13 13:32:11.111111', '2022-04-13 13:32:11.111111', 1, 24.30,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Canteen lunch', 22, '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111',
+values ('Canteen lunch', 22, '2022-04-14 18:00:11.111111', '2022-04-14 18:00:11.111111', '2022-04-14 18:00:11.111111',
         1, 15.90, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Fanta', 2, '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111', 1, 1.80,
+values ('Fanta', 2, '2022-04-15 19:00:11.111111', '2022-04-15 19:00:11.111111', '2022-04-15 19:00:11.111111', 1, 1.80,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Sprite', 2, '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111', '2022-04-02 18:00:11.111111', 1, 2.10,
+values ('Sprite', 2, '2022-04-16 20:00:11.111111', '2022-04-16 20:00:11.111111', '2022-04-16 20:00:11.111111', 1, 2.10,
         '0');
 
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Sushi', 1, '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', 1, 34.90,
+values ('Sushi', 1, '2022-03-17 12:12:12.222222', '2022-03-17 12:12:12.222222', '2022-03-17 12:12:12.222222', 1, 34.90,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Pizza', 1, '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', 1, 9.90,
+values ('Pizza', 1, '2022-03-18 13:12:12.222222', '2022-03-18 13:12:12.222222', '2022-03-18 13:12:12.222222', 1, 9.90,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Rent', 7, '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', '2022-03-07 12:12:12.222222', 1, 350,
+values ('Rent', 7, '2022-03-20 13:12:12.222222', '2022-03-20 13:12:12.222222', '2022-03-20 13:12:12.222222', 1, 350,
         '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Spotify', 22, '2022-03-11 13:02:55.222222', '2022-03-11 13:02:55.222222', '2022-03-11 13:02:55.222222', 1,
+values ('Spotify', 22, '2022-03-21 13:02:55.222222', '2022-03-21 13:02:55.222222', '2022-03-21 13:02:55.222222', 1,
         5.50, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Cinema tickets - 4 people', 19, '2022-03-25 17:34:43.222222', '2022-03-25 17:34:43.222222',
-        '2022-03-25 17:34:43.222222', 1, 40.44, '0');
+values ('Cinema tickets - 4 people', 19, '2022-03-22 17:34:43.222222', '2022-03-22 17:34:43.222222',
+        '2022-03-22 17:34:43.222222', 1, 40.60, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
-values ('Monthly bus ticket', 18, '2022-03-25 17:34:43.222222', '2022-03-25 17:34:43.222222',
-        '2022-03-25 17:34:43.222222', 1, 33.20, '0');
+values ('Monthly bus ticket', 18, '2022-03-23 18:34:43.222222', '2022-03-23 18:34:43.222222',
+        '2022-03-23 18:34:43.222222', 1, 33.20, '0');
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
 values ('Party shopping', 4, '2022-03-25 22:19:10.222222', '2022-03-25 22:19:10.222222', '2022-03-25 22:19:10.222222',
         1, 99.90, '0');
