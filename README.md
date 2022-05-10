@@ -6,6 +6,12 @@ Created: March 26, 2022 11:47 AM
 
 1. Spending App
 
+## **Realizowany przez**
+
+1. Jakub Stępień
+2. Łukasz Pawlak
+3. Martyna Olszewska
+
 ## **Cel projektu**
 
 1. Aplikacja pozwalająca rejestrować wydatki oraz pokazująca jak zmieniają się nasze wydatki w miesiącach. Pozwala zauważyć zwiększające się ceny w przyjemny sposób.
