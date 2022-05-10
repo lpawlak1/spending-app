@@ -29,7 +29,7 @@ class UserConfigDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfi
 
   def insertBudget(user_id: Int, new_budget: Double): Future[Int] = db.run {
     sqlu"""
-        call insert_budget($user_id, (${new_budget})::NUMERIC::money);
+        call insert_budget($user_id, (${new_budget})::NUMERIC);
         """
   }
 

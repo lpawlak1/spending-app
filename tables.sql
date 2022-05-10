@@ -338,9 +338,9 @@ VALUES ('Subscriptions', (select Cat_ID from Category where cat_name = 'Entertai
 
 -- Budget table inserts
 insert into budget(B_Amount, B_Starting_Date, U_ID, B_Active, AddedDate)
-values (2000, '2022-04-01 00:00:00.000000', 1, false, now());
+values (2000, '2022-04-01 00:00:00.000000', 1, true, now());
 insert into budget(B_Amount, B_Starting_Date, U_ID, B_Active, AddedDate)
-values (500, '2022-03-01 00:00:00.000000', 1, false, now());
+values (500, '2022-03-01 00:00:00.000000', 1, true, now());
 
 -- Expense table inserts
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
