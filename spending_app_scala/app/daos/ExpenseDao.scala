@@ -33,35 +33,25 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   import dbConfig.profile.api._
 
   private class ExpenseTable(tag: Tag)
-    extends Table[models.Expense](tag, Some("public"), "test1") {
-    def expense_id = column[Int]("ex_id", O.PrimaryKey, O.AutoInc)
+    extends Table[models.Expense](tag, Some("public"), "expense_view") {
+      def expense_id = column[Int]("ex_id", O.PrimaryKey, O.AutoInc)
+      def expense_name = column[String]("ex_name")
+      def category_id = column[Int]("cat_id")
+      def user_id = column[Int]("u_id")
+      def added_date = column[LocalDateTime]("addeddatetime")
+      def last_mod_date = column[LocalDateTime]("lastmodificationdate")
+      def purchase_date = column[LocalDateTime]("dateofpurchase")
+      def desc = column[Option[String]]("description")
+      def price = column[Double]("price")
+      def deleted = column[Boolean]("deleted")
 
-    def expense_name = column[String]("ex_name")
+      def category_name = column[Option[String]]("cat_name", O.PrimaryKey, O.AutoInc)
+      def superior_cat_id = column[Option[Int]]("cat_superior_cat_id", O.PrimaryKey, O.AutoInc)
 
-    def category_id = column[Int]("cat_id")
-
-    def user_id = column[Int]("u_id")
-
-    def added_date = column[LocalDateTime]("addeddatetime")
-
-    def last_mod_date = column[LocalDateTime]("lastmodificationdate")
-
-    def purchase_date = column[LocalDateTime]("dateofpurchase")
-
-    def desc = column[Option[String]]("description")
-
-    def price = column[Double]("price")
-
-    def deleted = column[Boolean]("deleted")
-
-
-    def category_name = column[Option[String]]("cat_name", O.PrimaryKey, O.AutoInc)
-    def superior_cat_id = column[Option[Int]]("cat_superior_cat_id", O.PrimaryKey, O.AutoInc)
-
-    def * : ProvenShape[Expense] = (
-      expense_id.?, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
-      desc, price, deleted, category_name, superior_cat_id
-      ).mapTo[models.Expense]
+      def * : ProvenShape[Expense] = (
+        expense_id.?, expense_name, category_id, user_id, added_date, last_mod_date, purchase_date,
+        desc, price, deleted, category_name, superior_cat_id
+        ).mapTo[models.Expense]
   }
 
   private val expenses_table = TableQuery[ExpenseTable]
@@ -74,7 +64,10 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 
   def setDeleted(ex_id: Int, del: Boolean): Future[Int] = {
-    val query = expenses_table.filter(_.expense_id === ex_id).map(_.deleted).update(del)
+    val query = expenses_table
+                  .filter(_.expense_id === ex_id)
+                  .map(_.deleted)
+                  .update(del)
     db.run(query)
   }
 
@@ -82,7 +75,7 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     queryFiltering(u_id, category_id, start_date, end_date, del)
       .sortBy(_.purchase_date.asc)
       .result
-  }
+}
 
   def getExpensesSum(u_id: Int): Future[Double] = db.run {
     sql"""select public.get_current_users_expenses_sum(${u_id});""".as[Double].head

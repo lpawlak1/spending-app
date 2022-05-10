@@ -97,11 +97,6 @@ function reload_chart_1() {
                     interaction: {
                         intersect: false
                     },
-                    elements: {
-                        line: {
-                            tension: 0.4,
-                        }
-                    }
                 }
             });
         }

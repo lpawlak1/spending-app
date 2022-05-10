@@ -261,7 +261,7 @@ $$ language plpgsql;
 
 -- test features below
 
-create or replace view public.test1 as
+create or replace view public.expense_view as
 select e.*,
        (select c.cat_name
         from public.category c
