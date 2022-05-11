@@ -2,7 +2,7 @@
 
 W Scali 2 podczas korzystania z biblioteki Slick nie używamy klasycznego ORM'a, lecz FRM'a który dzięki metodzie `(un)apply` umozliwia zmienić krotki na obiekty.
 
-TODO: Może warto coś jeszcze dopisać o FRM? Dla mnie jeszcze nie jest takie oczywiste czym się różni jedno od drugiego.
+Podczas, gdy ORM pobiera cały zbiór wynikowy, dzięki FRM możemy skorzystać ze strumieniowania zapytania przez SZBD
 
 Większą zmianą przychodząc np z Hibernate jest to, że nie mamy mutowalności obiektów i persystencja obiektów nie jest zachowana automatycznie. Bazujemy bardziej na tym aby szybko wyciągnąć dane oraz coś z nimi zrobić, a nie zachować persystencje przez sesję.
 
@@ -16,9 +16,9 @@ Dzięki temu możemy skonstruować między innymi takie zapytanie:
 
 ![](./imgs/2.png)
 
-TODO: Podpisanie powyższego query krótko jednym zdaniem co robi.
-
 Argumenty po prawej stronie w nawiasach mogą być sprawdzane statycznie więc podczas kompilacji można otrzymać stosowną informację.
+
+W powyższym zapytaniu w zależności od wartości Option (Some/None) dodajemy do zapytania dodatkowy filtr, bez dużej ilości kodu jak by to było przy ifach i imperatywnym zapisie.
 
 Takie zapytanie jest możliwe do ponownego wykorzystania bez dodatkowego nakładu zapytań na bazę danych. Przykładem na to jest wykres kołowy obrazujący podział wydatków względem poszczególnych kategorii gdzie użyliśmy poniższego zapytania:
 
