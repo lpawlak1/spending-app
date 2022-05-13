@@ -16,6 +16,9 @@ GET     /history/chart              controllers.ExpenseHistoryController.chart(u
 GET     /history/get_row            controllers.ExpenseHistoryController.getRows(user_id: Option[String], category_id: Option[Int], start_date: Option[String], end_date: Option[String], del: Option[Boolean])
 GET     /history/sum_category       controllers.ExpenseHistoryController.getSumPerCategory(user_id: Option[String], category_id: Option[Int], start_date: Option[String], end_date: Option[String], del: Option[Boolean])
 
+#protected compare month expenses
+GET     /compare                    controllers.CompareController.compare(user_id: Option[String])
+
 DELETE  /expense/:id               controllers.ExpenseHistoryController.delete(id: Int, del: Option[Boolean])
 PUT     /expense/:id               controllers.ExpenseHistoryController.delete(id: Int, del: Option[Boolean])
 

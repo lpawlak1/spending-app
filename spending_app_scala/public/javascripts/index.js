@@ -19,6 +19,9 @@ $(function() {
     $('#expense-history-chart-bt').click(function() {
         window.location.href = `/history/chart?user_id=${user_id}`;
     })
+    $('#compare-expense-table-chart-bt').click(function () {
+        window.location.href = `/compare?user_id=${user_id}`;
+    })
 
     $('#surprise-btn').click(function() {
         alert("surprise");

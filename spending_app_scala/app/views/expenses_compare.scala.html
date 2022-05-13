@@ -1,0 +1,69 @@
+@import services.DateTimeFormatter
+@import views.html.helper.CSRF
+@import views.html.helper.form
+@import models.Expense
+@(categories: List[(Category, Seq[Category])], expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
+
+
+<!doctype html>
+<html lang="en">
+    @head(List("Toast.min",
+        "style").map(x => routes.Assets.versioned(s"stylesheets/${x}.css")),
+        List("Toast.min", "compare").map(x => routes.Assets.versioned(s"javascripts/${x}.js")),"Compare Expenses")(themeColor){ }
+<body>
+    <form id="CSRF">
+        @helper.CSRF.formField
+    </form>
+
+    <div class="powrot-strzaleczka">
+        <a id="strzaleczka" href="/"><i class="fa-solid fa-arrow-left-long"></i></a>
+    </div>
+
+    <div class="">
+        <div class="element-blue">
+            <div>
+                <label style="display: block;font-size: 22px; text-align: center ;" for="datepicker">Choose start and end date</label>
+                <input type="text" name="basic" id="datepicker" value="01/01/2022 - 07/27/2022">
+            </div>
+
+            <div>
+                <input type="checkbox" id="showDeleted">
+                <label for="showDeleted" style="font-size: 22px;">Show deleted?</label>
+            </div>
+
+            <div class="categories-wrapper">
+                <p>Category of expense</p>
+
+                <div>
+                    <input type="radio" name="category" id="all-categories" value="-1" checked>
+                    <label for="all-categories"><b>All categories</b></label>
+                </div>
+
+                @for((x, y) <- categories){
+                    <div>
+                        <input type="radio" name="category" id="@{x.name}" value="@{x.id}">
+                        <label for="@{x.name}"><b>@{x.name}</b></label>
+                    </div>
+                    <div class="sub-categories">
+                    @for(z <- y){
+                        <div>
+                            <input type="radio" name="category" id="@{z.name}" value="@{z.id}">
+                            <label for="@{z.name}">@{z.name}</label>
+                        </div>
+                    }
+                    </div>
+                }
+            </div>
+        </div>
+
+
+
+
+
+
+</div>
+        <div style="height: 700px; width: 700px; margin-inline: auto;">
+            <canvas id="first_chart" width="400" height="400" style="background: white;" ></canvas>
+        </div>
+    </body>
+</html>
