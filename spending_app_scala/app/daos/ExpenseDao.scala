@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.Future
 
+
 trait ExpenseDao {
   def getExpensesSum(u_id: Int): Future[Double]
 
@@ -24,6 +25,12 @@ trait ExpenseDao {
   def setDeleted(ex_id: Int, del: Boolean): Future[Int]
 
   def getSubCategoriesSum(u_id: Int, category_id: Option[Int] = None, start_date: Option[String] = None, end_date: Option[String] = None, del: Boolean = false): Future[Seq[(Option[String], Option[Double])]]
+
+  def getCumulativeDifferences(u_id: Int, category_id: Option[Int] = None, start_date: String, end_date: String): Future[Seq[ExpenseCumulativeResultSet]]
+}
+
+case class ExpenseCumulativeResultSet(month: Int, year: Int, difference: Double, sum: Double) {
+  def apply(month: Int, year: Int, difference: Double, sum: Double): ExpenseCumulativeResultSet = new ExpenseCumulativeResultSet(month, year, difference, sum)
 }
 
 class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -97,5 +104,16 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         case (cat_name, rest) => (cat_name, rest.map(_.price).sum)
       }
       .result
+  }
+
+
+  implicit val getCumulativeResultSet: GetResult[ExpenseCumulativeResultSet] = GetResult(r => ExpenseCumulativeResultSet(r.<<, r.<<, r.<<, r.<<))
+  def getCumulativeDifferences(u_id: Int, category_id: Option[Int] = None, start_date: String, end_date: String): Future[Seq[ExpenseCumulativeResultSet]] = db.run {
+    sql"""
+         select * from get_comparement(${start_date}::timestamp without time zone,
+                                       ${end_date}::timestamp without time zone,
+                                       ${u_id},
+                                       ${category_id});
+       """.as[ExpenseCumulativeResultSet]
   }
 }

@@ -135,12 +135,9 @@ $$;
 call insert_budget(1, cast(1500.00 as real));
 
 drop function if exists public.get_all_months_between;
-create or replace function public.get_all_months_between(start_date timestamp, end_date timestamp)
-    returns table
-            (
-                month text,
-                year  text
-            )
+create or replace function get_all_months_between(start_date timestamp without time zone, end_date timestamp without time zone)
+    returns TABLE(month text, year text, month_value double precision, year_value double precision)
+    language plpgsql
 as
 $$
 declare
@@ -148,18 +145,23 @@ begin
     return query (WITH RECURSIVE date_range AS
                                      (select (to_char(start_date, 'MM'))     as month_,
                                              (to_char(start_date, 'YYYY'))   as year_,
+                                             extract(month from start_date) as month_value,
+                                             extract(year from start_date) as year_value,
                                              start_date + INTERVAL '1 MONTH' as next_month_date
                                       UNION
                                       SELECT (to_char(dr.next_month_date, 'MM'))     as month_,
                                              (to_char(dr.next_month_date, 'YYYY'))   as year_,
+                                             extract(month from dr.next_month_date) as month_value,
+                                             extract(year from dr.next_month_date) as year_value,
                                              dr.next_month_date + INTERVAL '1 MONTH' as next_month_date
                                       FROM date_range dr
                                       where next_month_date <= end_date)
-                  select month_, year_
+                  select month_, year_, month_value, year_value
                   from date_range
                   order by next_month_date asc);
 end
-$$ language plpgsql;
+$$;
+
 
 drop function if exists public.get_budget_per_month(u_id int);
 create or replace function get_budget_per_month(u_id int)
@@ -259,7 +261,6 @@ begin
 end;
 $$ language plpgsql;
 
--- test features below
 
 create or replace view public.expense_view as
 select e.*,
@@ -270,6 +271,60 @@ select e.*,
         from public.category c
         where c.cat_id = e.cat_id)
 from Expense e;
+
+create or replace function get_difference(first real, second real) returns real as $$BEGIN
+    IF first = 0 then
+        return 0;
+    end if;
+    return 100 * ((second-first)/first);
+end
+$$ language plpgsql;
+
+CREATE or REPLACE FUNCTION get_differences_cumulative(
+    start_date timestamp without time zone,
+    end_date timestamp without time zone,
+    user_id integer,
+    category_id integer default null
+) RETURNS TABLE(month text, year text, difference real, sum real)
+AS $$
+DECLARE
+    first_sum real;
+BEGIN
+    end_date := date_trunc('month', end_date) + interval '1 month - 1 second';
+
+    select
+        coalesce(sum(ex.price), 0)
+    into
+       first_sum
+    from (select 0 as price) ju
+    left join public.expense ex
+        on true
+    left join public.category cat
+        on ex.cat_id = cat.cat_id or ex.cat_id = cat.cat_superior_cat_id
+    where
+        ex.dateofpurchase between start_date and date_trunc('month', start_date) + interval '1 month - 1 second'
+        and ex.u_id = user_id
+        and ex.deleted is false
+        and (category_id is null or cat.cat_id = category_id or cat.cat_superior_cat_id = category_id);
+
+    return query
+        select m.month, m.year, get_difference(first_sum, exs.sum_) as difference, coalesce(exs.sum_, 0) as sum
+        from get_all_months_between(start_date := start_date, end_date := end_date) m
+        left join (
+            select sum(price) as sum_, extract(month from dateofpurchase) as month, extract(year from dateofpurchase) as year
+            from public.expense ex
+            left join category c
+                on ex.cat_id = c.cat_id or ex.cat_id = c.cat_superior_cat_id
+            where ex.dateofpurchase between start_date and end_date
+                and ex.u_id = user_id
+                and deleted is false
+                and (category_id is null or c.cat_id = category_id or c.cat_superior_cat_id = category_id)
+            group by extract(month from dateofpurchase), extract(year from dateofpurchase)
+                ) exs
+            ON
+                m.month_value = exs.month and m.year_value = exs.year;
+END
+$$ LANGUAGE plpgsql;
 
 -- INSERT DATA
 
