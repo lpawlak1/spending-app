@@ -2,7 +2,7 @@
 @import views.html.helper.CSRF
 @import views.html.helper.form
 @import models.Expense
-@(categories: List[(Category, Seq[Category])], expenses: Seq[Expense])(themeColor: ThemeColor)(implicit request: RequestHeader)
+@(categories: List[(Category, Seq[Category])])(themeColor: ThemeColor)(implicit request: RequestHeader)
 
 
 <!doctype html>
@@ -55,15 +55,31 @@
                 }
             </div>
         </div>
+            <table class="table__history element-blue">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Difference</th>
+                        <th>Sum</th>
+                    </tr>
+                </thead>
+                <tbody>
 
+                <tr class="inside-tr">
+                    <td class="hidden">1</td>
+                    <td class="table__name text-center">2022</td>
+                    <td class="table__name text-center">12</td>
+                    <td class="table__name text-center">50%</td>
+                    <td class="table__name text-center">1999</td>
+                </tr>
 
+                </tbody>
+            </table>
 
-
-
-
-</div>
+        </div>
         <div style="height: 700px; width: 700px; margin-inline: auto;">
             <canvas id="first_chart" width="400" height="400" style="background: white;" ></canvas>
         </div>
-    </body>
+</body>
 </html>

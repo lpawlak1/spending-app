@@ -59,13 +59,10 @@ class CompareController @Inject()(
           }).flatten
 
           val themeColorFuture = userConfigDao.getUsersColor(user_id.get.toInt)
-          val expensesFuture = expenseDao.findWithFilters(user_id.get.toInt)
-
           val retThemeColor = Await.result(themeColorFuture, 3.seconds).getOrElse(ThemeColor.default)
-          val retExpenses = Await.result(expensesFuture, 1.seconds)
 
           val categories = Await.result(ret, 1.seconds)
-          Ok(views.html.expenses_compare(categories , retExpenses)(retThemeColor))
+          Ok(views.html.expenses_compare(categories)(retThemeColor))
 
         }
         case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
