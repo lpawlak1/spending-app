@@ -38,3 +38,31 @@ Created: March 26, 2022 11:47 AM
 3. PostgreSQL
 4. Docker
 
+## **Result**
+
+Można się zalogować
+
+![](./imgs/23.png)
+
+Zobaczyć stronę główną z najważniejszymi informacjami
+
+![](./imgs/24.png)
+
+Wybrać kolor :)
+
+![](./imgs/25.png)
+
+![](./imgs/1.gif)
+
+Zobaczyć historię wydatków i ją przefiltrować bez submita 8) (ajax robi brrr)
+
+![](./imgs/26.png)
+
+Jak ktoś nie lubi tabelek to są też wykresy
+
+![](./imgs/27.png)
+
+I nawet można zobaczyć modsumowanie miesięczne wraz z wykresem pokazującym różnicę procentową między wydatkami z danego pierwszego wybranego miesiąca 8)
+
+![](./imgs/28.png)
+
