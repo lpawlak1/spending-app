@@ -1,5 +1,6 @@
 package daos
 
+import akka.event.Logging
 import models._
 import daos._
 import org.postgresql.util.PGmoney
@@ -109,11 +110,12 @@ class ExpenseDaoSlick @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
   implicit val getCumulativeResultSet: GetResult[ExpenseCumulativeResultSet] = GetResult(r => ExpenseCumulativeResultSet(r.<<, r.<<, r.<<, r.<<))
   def getCumulativeDifferences(u_id: Int, category_id: Option[Int] = None, start_date: String, end_date: String): Future[Seq[ExpenseCumulativeResultSet]] = db.run {
+    println(s"${start_date}\n${end_date}\n${u_id}\n${category_id}\n")
     sql"""
-         select * from get_comparement(${start_date}::timestamp without time zone,
-                                       ${end_date}::timestamp without time zone,
-                                       ${u_id},
-                                       ${category_id});
+         select * from get_differences_cumulative(${start_date}::timestamp without time zone,
+                                                  ${end_date}::timestamp without time zone,
+                                                  ${u_id},
+                                                  (${category_id})::integer);
        """.as[ExpenseCumulativeResultSet]
   }
 }

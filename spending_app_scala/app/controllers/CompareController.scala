@@ -7,6 +7,7 @@ import daos.{CategoryDao, ExpenseDao, TuplesUnpack, UserConfigDao}
 import models.{Category, ThemeColor}
 import play.api.libs.json.Json
 import play.api.mvc._
+import services.DateTimeFormatter
 import services.DateTimeFormatter.getDateTime
 import services.UserAuthorizationActor.UserAuthorization
 
@@ -68,6 +69,27 @@ class CompareController @Inject()(
         case false => Redirect(LoginUtils.LOGIN_ERROR_LINK)
       }
     }
+  }
+
+  def getComparedData(user_id: Option[String], category_id: Option[Int], start_date: Option[String], end_date: Option[String]) = Action.async {
+    (userAuthorizationActor ? UserAuthorization(user_id)).mapTo[Future[Boolean]].flatten.map {
+      case true => {
+        if (start_date.isEmpty || end_date.isEmpty){
+          Future.successful(Unauthorized)
+        }
+        expenseDao.getCumulativeDifferences(user_id.get.toInt, category_id, DateTimeFormatter.getDateFromString(start_date.get).toString, DateTimeFormatter.getDateFromString(end_date.get).toString).map(f => {
+          Ok(Json.toJson(f.map { x =>
+            Map(
+              "month" -> x.month.toString,
+              "year" -> x.year.toString,
+              "sum" -> x.sum.toString,
+              "difference" -> x.difference.toString
+            )
+          }))
+        })
+      }
+      case false => Future.successful(Unauthorized)
+    }.flatten
   }
 }
 

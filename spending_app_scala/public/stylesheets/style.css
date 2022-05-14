@@ -399,9 +399,11 @@ main .color__btn {
 }
 
 input[name=basic]{
-    width: 225px;
-    font-size: 20px;
+    width: 250px;
+    font-size: 22px;
     padding: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .sub-categories {
@@ -486,4 +488,13 @@ input[name=basic]{
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-content: space-evenly;
+
+}
+#table-diff {
+    width: 700px;
+}
+.height-max {
+    height: 700px;
+    width: 700px;
+    margin-inline: auto;
 }
