@@ -59,7 +59,7 @@ Jednak gdyby zastanowić się nad połączeniami i jak dokładnie są obserwowan
 Podczas przemyśleń dotyczących architektury projektu jednym z pomysłów było zastosowanie się do `Reactive Manifesto` i użycie aktorów z biblioteki Akka.
 Future nie jest jednak w żadnym stopniu odpowiednim narzędziem przystosowanym do aktorów, gdyż nie jesteśmy w stanie określić na jakim wątku jest wykonywana operacja blokująca.
 
-W samym Akka istnieją strumienie zatem wydawało się że idealnie nadadzą się do odczytywania danych z bazy. Jednak to wymagało by własnej implementacji połączenia z bazą danych co jest przytłaczające.
+W samym Akka istnieją strumienie zatem wydawało się że idealnie nadadzą się do odczytywania danych z bazy. Jednak to wymagało by własnej implementacji połączenia z bazą danych (poprzez JDBC) co jest przytłaczające.
 
 Jednak mimo, że jest to bardzo zła implementacja i w środowisku produkcyjnym nie zdecydowalibyśmy się na taki krok to użyliśmy jednego aktora, aby poznać choć minimum pracy z Akką. Jest to aktor odpowiedzialny za autoryzację użytkownika.
 
@@ -95,3 +95,55 @@ Na pewno dużym problemem tutaj jest możliwość obserwowania takiej serii zapy
 Oczywiście Slick oraz FRM mają dużo problemów, które ciężko rozwiązać w prosty sposób. Jednak pomimo problemów napotkanych jest to dobre odejście w odróżnieniu od np Hibernate'a przez niemutowalność obiektów, brak myślenia o tym czy transakcja jest otwarta podczas zmieniania obiektów czy myślenia o PreparedStatement, kiedy chcemy użyć funkcji.
 
 Kody 'problematyczne' zostały zostawione w projekcie w celach dydaktycznych.
+
+### Daty
+
+Podczas pisania różnych zapytań oraz obsługi aplikacji rzuciło się w oczy jak ciężkim jest utrzymanie dat po stronie Scali oraz bazy danych.
+Podczas, gdy w większości aplikacji webowej mamy format 'DD.MM.YYYY HH24:mm', po stronie bazy przyjmujemy `timestamp without time zone`.
+Po stronie Scali napisaliśmy parser z formatu 'polskiego' na `LocalDateTime` z Javy. Gdy korzystamy z klasy reprezentującej tabelę w bazie danych możemy otrzymać `LocalDateTime` z JDBC.
+Jednak, gdy chcemy skorzystać z Plain SQL (gdy jest potrzeba) to wpisanie Stringa (ISO-8601) do PreparedStatement nie działa, gdyż JVM nie potrafi wpisać argumentu typu LocalDateTime do zapytania.
+W takich sytuacjach posiłkujemy się Stringiem reprezentującym ISO-8601 oraz `cast` po stronie sqla. Nie ciężko stwierdzić że takie używanie jest błędne, lecz niezastąpione w tym przypadku.
+
+![](./imgs/21.png)
+
+### Indeksy oraz problemy z nimi w PostgreSQL
+
+Podczas testów dotyczących szybkości zapytań oraz ich przyspieszenia dzięki użyciu indeksów w bazie danych napotkaliśmy parę problemów.
+
+Pierwszym z nich jest brak możliwości testowania zapytań (wielu zapytań w funkcjach napisanych przy pomocy proceduralnego języka plpgsql).
+
+Jednak to był mniejszy problem. Jednym z zapytań które podlegało testom było to:
+
+![](./imgs/18.png)
+
+W dużym skrócie testowaliśmy użycie filtrów w `where` wraz z `group by`, aby sprawdzić jakie indeksy w takim zapytaniu nadadzą się najlepiej.
+
+Dodaliśmy około 130 000 nowych wydatków aby mieć pewną grupę testową.
+
+![](./imgs/22.png)
+
+Dodaliśmy nadmiarową ilość indeksów aby sprawdzić jakich indeksów zdecyduje się użyć postgres.
+
+![](./imgs/16.png)
+
+![](./imgs/13.png)
+
+Jednak mimo wielu indeksów podczas obliczania głównego zapytania z agregacją SZBD zdecydował że najszybciej będzie poprzez Full Scan.
+Warto tutaj zapamiętać Actual Total Time dla Aggregate. Jest to 131 ms.
+Nie było to zadowalająca istota rzeczy (nie korzystanie z indeksów gdy właśnie to się narzuca), więc uzyliśmy flagi PostgreSQL, aby używał indeksów.
+
+![](./imgs/19.png)
+
+Po tej zmianie można było zauważyć Index Scan, lecz indeks po którym było wykonywane zapytanie to `uid_not_deleted_index`, który odpowiada `(u_id) where deleted is false`.
+Także brak poprawy Actual Total Time dla głównego zapytania nie polepszył się. Zatem zaczęliśmy usuwać indeksy patrząc w jaki sposób wpływa na zapytanie.
+
+![](./imgs/15.png)
+
+Doszliśmy do staniu gdzie używanym indeksem było `date_purchase_expense_index`, który odpowiada `(dateofpurchase)`. Czas zdecydowanie się poprawił z 131ms na 85.203ms. Taki stan rzeczy zapewne zależy mocno od danych, które znajdują się w bazie danych.
+
+![](./imgs/17.png)
+
+Jednak to nie był koniec, zastanawiającym był brak użycie indeksu z `u_id,dateofpurchase` zatem index wyżej został zdropowany i plan sprawdzony. Okazuje się, że Total Time zmalał do 75ms. Oczywiście dokładny czas mocno zależy między innymi od parametrów dysków w maszynie na której jest baza danych.
+
+Jak widać planner Postgresa z każdą zmianą stwierdza że wewnętrzny koszt operacji zwiększa się, jednak pomiar czasu zmienia się w drugą stronę. Dzięki tak prostej operacji udało się przyspieszyć to zapytanie o 42%. Oczywiście w tym przypadku zapewne na dysku, którego operacje odczytu random access są wolne prędkości nie przełożyły by się do przyspieszenia.
+
