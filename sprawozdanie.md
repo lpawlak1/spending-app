@@ -1,3 +1,20 @@
+---
+fontfamily: helvet
+header-includes:
+  - \renewcommand{\familydefault}{\sfdefault}
+geometry: margin=2cm
+documentclass: extarticle
+<!-- fontsize: 14pt -->
+---
+
+# Sprawozdanie z projektu z baz danych
+## Spending app
+## Przygotowali Łukasz Pawlak, Jakub Stępień, Martyna Olszewska
+
+## Schemat bazy danych
+
+![](./imgs/29.png)
+
 ### FRM
 
 W Scali 2 podczas korzystania z biblioteki Slick nie używamy klasycznego ORM'a, lecz FRM'a który dzięki metodzie `(un)apply` umozliwia zmienić krotki na obiekty.
