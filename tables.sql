@@ -471,16 +471,3 @@ values ('Monthly bus ticket', 18, '2022-03-23 18:34:43.222222', '2022-03-23 18:3
 insert into public.expense(Ex_name, Cat_ID, AddedDateTime, LastModificationDate, DateOfPurchase, U_ID, price, Deleted)
 values ('Party shopping', 4, '2022-03-25 22:19:10.222222', '2022-03-25 22:19:10.222222', '2022-03-25 22:19:10.222222',
         1, 99.90, '0');
-
--- Dummy inserts for testing indexes
--- begin;
--- insert into public.user (u_id, u_role, registrationdate, u_primaryemail, u_firstname, u_lastname, col_id)
--- select id,
---        'User',
---        NOW() - '1 day'::INTERVAL * (RANDOM()::int * 100 + 100),
---        'user' || id || '@spending-app.com',
---        substr(md5(random()::text), 0, 20),
---        substr(md5(random()::text), 0, 20),
---        floor(random() * 3 + 1)::int
--- from generate_series(4, 100000) as id
--- commit;

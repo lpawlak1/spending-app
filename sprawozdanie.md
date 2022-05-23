@@ -147,7 +147,7 @@ Oczywiście ww. podejścia można jeszcze spróbować przyspieszyć. Przy już u
 
 Zoptymalizowane podejście (dla 100k wierszy) ma czas dużo bardziej do przyjęcia:
 
-![](./imgs/timing_opt.png)
+![XD](./imgs/t_opt.png)
 
 Jako że ostatnie podejście wypadło najlepiej w trakcie ładowania danych to też je wykorzystaliśmy przygotowując się do testowania indeksów.
 
