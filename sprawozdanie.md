@@ -123,6 +123,34 @@ W takich sytuacjach posiłkujemy się Stringiem reprezentującym ISO-8601 oraz `
 
 ![](./imgs/21.png)
 
+### Dodawanie dużych zbiorów danych do testów
+
+Przy okazji testowania indeksów musieliśmy również nauczyć się optymalizować proces dodawania dużej ilości danych testowych.
+
+Jednym z proponowanych rozwiązań jest wyłączenie `autocommita` gdy używamy wielu operacji `insert` (w plain SQL jest to równoważne z otoczeniem naszego query `BEGIN` oraz `COMMIT`). W innym przypadku, gdy pozwolimy aby każda operacja `insert` była wprowadzana oddzielnie, PostgreSQL musi wykonywać sporo pracy przy każdym wierszu jaki wprowadzamy.
+
+Kolejnym rekomendowanym podejściem gdy chcemy wstawiać duże ilości danych do bazy jest użycie operacji `\COPY`. Pozwala ona załadować wszystkie wiersze jedną komendą, zamiast korzystać z serii operacji `INSERT`. `\COPY` nie daje takiej swobody jak insert ale z drugiej strony sumaryczny koszt tej operacji jest znacząco mniejszy przy ładowaniu dużych zbiorów danych.
+
+Dla małej ilości wierszy operacje nie robią wielkiej różnicy:
+
+![](./imgs/timing_insert_1k.png)
+
+![](./imgs/timing_1k.png)
+
+Różnica zaczyna staje się bardziej widoczna dla datasetów większą liczbą recordów np. ~100k, tutaj przypadek z bez optymalizacji:
+
+![](./imgs/timing_wo_opt.png)
+
+`\COPY` poradziło sobie odrobinę lepiej, jednak żeby działało najszybciej wymaga więcej przygotowań (`\COPY` jest najszybsze gdy występuje w tej samej transakcji co komendy `CREATE TABLE` lub `TRUNCATE` - zatem na początkowym etapie projektu gdy chcemy szybko zapełnić bazę i nie mamy tam jeszcze indexów/triggerów).
+
+Oczywiście ww. podejścia można jeszcze spróbować przyspieszyć. Przy już utworzonej tabeli, zdropowanie istniejących indeksów / wyłączenie triggerów, załadowanie tabeli, a na koniec odtworzenie poprzedniego stanu może podnieść wydajność. Trzeba jednak uważać na dropowanie unikalnych indeksów jako że error checking jaki zapewnia unique constraint będzie niedostępny.
+
+Zoptymalizowane podejście (dla 100k wierszy) ma czas dużo bardziej do przyjęcia:
+
+![](./imgs/timing_opt.png)
+
+Jako że ostatnie podejście wypadło najlepiej w trakcie ładowania danych to też je wykorzystaliśmy przygotowując się do testowania indeksów.
+
 ### Indeksy oraz problemy z nimi w PostgreSQL
 
 Podczas testów dotyczących szybkości zapytań oraz ich przyspieszenia dzięki użyciu indeksów w bazie danych napotkaliśmy parę problemów.
@@ -163,4 +191,3 @@ Doszliśmy do staniu gdzie używanym indeksem było `date_purchase_expense_index
 Jednak to nie był koniec, zastanawiającym był brak użycie indeksu z `u_id,dateofpurchase` zatem index wyżej został zdropowany i plan sprawdzony. Okazuje się, że Total Time zmalał do 75ms. Oczywiście dokładny czas mocno zależy między innymi od parametrów dysków w maszynie na której jest baza danych.
 
 Jak widać planner Postgresa z każdą zmianą stwierdza że wewnętrzny koszt operacji zwiększa się, jednak pomiar czasu zmienia się w drugą stronę. Dzięki tak prostej operacji udało się przyspieszyć to zapytanie o 42%. Oczywiście w tym przypadku zapewne na dysku, którego operacje odczytu random access są wolne prędkości nie przełożyły by się do przyspieszenia.
-
